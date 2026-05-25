@@ -1,1 +1,80 @@
-/* You can add global styles to this file, and also import other style files */
+/* ===========================================================================
+   SmartPark · Apex Twin — Estilos globales y tokens de diseño
+   =========================================================================== */
+
+:root {
+  /* Marca */
+  --sp-primary: #1565c0;
+  --sp-primary-dark: #0d47a1;
+  --sp-primary-light: #5e92f3;
+  --sp-accent: #00bfa5;
+
+  /* Estados */
+  --sp-success: #2e7d32;
+  --sp-warning: #f9a825;
+  --sp-danger: #c62828;
+  --sp-info: #0277bd;
+
+  /* Superficies */
+  --sp-bg: #f4f6f9;
+  --sp-surface: #ffffff;
+  --sp-border: #e3e7ee;
+  --sp-text: #1f2733;
+  --sp-text-muted: #67707d;
+
+  /* Layout */
+  --sp-sidenav-w: 248px;
+  --sp-radius: 12px;
+  --sp-shadow: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.06);
+  --sp-shadow-lg: 0 8px 24px rgba(16, 24, 40, 0.12);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--sp-bg);
+  color: var(--sp-text);
+}
+
+a { color: var(--sp-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Utilidades compartidas -------------------------------------------------- */
+.sp-card {
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  box-shadow: var(--sp-shadow);
+  padding: 1.25rem;
+}
+
+.sp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+.sp-btn--primary { background: var(--sp-primary); color: #fff; }
+.sp-btn--primary:hover { background: var(--sp-primary-dark); }
+.sp-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.sp-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.sp-badge--success { background: #e6f4ea; color: var(--sp-success); }
+.sp-badge--warning { background: #fff6e0; color: #a66a00; }
+.sp-badge--danger  { background: #fdeaea; color: var(--sp-danger); }
