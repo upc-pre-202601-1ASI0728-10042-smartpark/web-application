@@ -1,0 +1,17 @@
+<div class="gauge sp-card">
+  <h3 class="gauge__title">Ocupación global</h3>
+  <svg viewBox="0 0 128 128" class="gauge__svg">
+    <circle class="gauge__track" cx="64" cy="64" r="52" />
+    <circle
+      class="gauge__value"
+      cx="64"
+      cy="64"
+      r="52"
+      [style.stroke]="color()"
+      [attr.stroke-dasharray]="circumference"
+      [attr.stroke-dashoffset]="dashOffset()"
+    />
+    <text x="64" y="60" class="gauge__percent">{{ percent() }}%</text>
+    <text x="64" y="82" class="gauge__caption">ocupado</text>
+  </svg>
+</div>
