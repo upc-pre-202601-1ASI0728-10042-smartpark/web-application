@@ -1,0 +1,15 @@
+<section class="dashboard">
+  <header class="dashboard__header">
+    <h2>Dashboard de ocupación</h2>
+  </header>
+
+  @if (summary(); as s) {
+    <div class="dashboard__grid">
+      <sp-occupancy-gauge [rate]="s.occupancyRate" />
+      <div class="dashboard__cards">
+        <sp-summary-cards [summary]="s" />
+      </div>
+    </div>
+    <sp-zone-overview [zones]="zones()" />
+  }
+</section>
