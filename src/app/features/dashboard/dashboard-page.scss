@@ -1,5 +1,20 @@
+.dashboard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
 .dashboard__header h2 {
-  margin: 0 0 1.25rem;
+  margin: 0;
+}
+.dashboard__state {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--sp-text-muted);
+}
+.dashboard__state--error {
+  color: var(--sp-danger);
 }
 .dashboard__grid {
   display: grid;
