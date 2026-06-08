@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { OccupancyService } from '../occupancy/occupancy.service';
 import { OccupancySummary, ZoneOccupancy } from '../occupancy/occupancy.models';
@@ -10,6 +10,7 @@ import { ZoneOverview } from '../occupancy/components/zone-overview/zone-overvie
 /**
  * Página principal del operador: muestra el resumen de ocupación del lote,
  * el indicador global y el desglose por zonas, consumiendo la API.
+ * Ante un 503 (Azure Digital Twins no disponible) entra en modo degradado.
  */
 @Component({
   selector: 'sp-dashboard-page',
@@ -24,6 +25,7 @@ export class DashboardPage implements OnInit {
   protected readonly zones = signal<ZoneOccupancy[]>([]);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
+  protected readonly degraded = signal(false);
 
   ngOnInit(): void {
     this.load();
@@ -32,17 +34,27 @@ export class DashboardPage implements OnInit {
   load(): void {
     this.loading.set(true);
     this.error.set(null);
+    this.degraded.set(false);
 
     forkJoin({
-      summary: this.occupancy.getSummary(),
-      zones: this.occupancy.getZones(),
+      summary: this.occupancy.getSummary().pipe(
+        catchError((err: HttpErrorResponse) => {
+          // 503: el gemelo digital no responde; mantenemos el último estado conocido.
+          if (err.status === 503) {
+            this.degraded.set(true);
+            return of(this.summary());
+          }
+          throw err;
+        }),
+      ),
+      zones: this.occupancy.getZones().pipe(catchError(() => of(this.zones()))),
     }).subscribe({
       next: ({ summary, zones }) => {
-        this.summary.set(summary);
+        if (summary) this.summary.set(summary);
         this.zones.set(zones);
         this.loading.set(false);
       },
-      error: (err: HttpErrorResponse) => {
+      error: () => {
         this.loading.set(false);
         this.error.set('No se pudo cargar la ocupación. Reintenta en unos segundos.');
       },

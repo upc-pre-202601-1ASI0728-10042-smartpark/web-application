@@ -6,6 +6,12 @@
     </button>
   </header>
 
+  @if (degraded()) {
+    <div class="dashboard__banner sp-card">
+      ⚠️ Modo degradado: el gemelo digital no responde. Se muestra el último estado conocido.
+    </div>
+  }
+
   @if (loading() && !summary()) {
     <div class="dashboard__state sp-card">Cargando datos de ocupación…</div>
   } @else if (error()) {
