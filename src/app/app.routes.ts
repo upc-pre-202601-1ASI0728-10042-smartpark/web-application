@@ -21,6 +21,16 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/dashboard-page').then((m) => m.DashboardPage),
       },
+      {
+        path: 'zones',
+        loadComponent: () =>
+          import('./features/zones/zones-list-page').then((m) => m.ZonesListPage),
+      },
+      {
+        path: 'zones/:zoneId',
+        loadComponent: () =>
+          import('./features/zones/zone-detail-page').then((m) => m.ZoneDetailPage),
+      },
     ],
   },
   { path: '**', redirectTo: '' },
