@@ -1,7 +1,9 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { OccupancyService } from '../occupancy/occupancy.service';
-import { ParkingSpace } from '../occupancy/occupancy.models';
+import { OccupancyState, ParkingSpace } from '../occupancy/occupancy.models';
+
+type SpaceFilter = 'All' | OccupancyState;
 
 /** Detalle de una zona: grilla de espacios con su estado de ocupación. */
 @Component({
@@ -17,10 +19,18 @@ export class ZoneDetailPage implements OnInit {
   protected readonly zoneId = signal('');
   protected readonly spaces = signal<ParkingSpace[]>([]);
   protected readonly loading = signal(false);
+  protected readonly filter = signal<SpaceFilter>('All');
+
+  protected readonly filters: SpaceFilter[] = ['All', 'Free', 'Occupied', 'Reserved'];
 
   protected readonly occupiedCount = computed(
     () => this.spaces().filter((s) => s.occupancyState === 'Occupied').length,
   );
+
+  protected readonly visibleSpaces = computed(() => {
+    const f = this.filter();
+    return f === 'All' ? this.spaces() : this.spaces().filter((s) => s.occupancyState === f);
+  });
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('zoneId') ?? '';
@@ -33,6 +43,10 @@ export class ZoneDetailPage implements OnInit {
       },
       error: () => this.loading.set(false),
     });
+  }
+
+  protected setFilter(filter: SpaceFilter): void {
+    this.filter.set(filter);
   }
 
   protected stateClass(state: ParkingSpace['occupancyState']): string {

@@ -19,8 +19,21 @@
       <span><i class="dot space--unknown"></i> Sin dato</span>
     </div>
 
+    <div class="filters">
+      @for (f of filters; track f) {
+        <button
+          type="button"
+          class="chip"
+          [class.chip--active]="filter() === f"
+          (click)="setFilter(f)"
+        >
+          {{ f === 'All' ? 'Todos' : f }}
+        </button>
+      }
+    </div>
+
     <div class="grid">
-      @for (space of spaces(); track space.spaceId) {
+      @for (space of visibleSpaces(); track space.spaceId) {
         <div class="space" [class]="stateClass(space.occupancyState)" [title]="space.occupancyState">
           {{ space.code }}
         </div>
