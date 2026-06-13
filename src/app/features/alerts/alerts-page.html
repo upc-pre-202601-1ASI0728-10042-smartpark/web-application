@@ -1,0 +1,11 @@
+<section class="alerts-page">
+  <header class="alerts-page__header">
+    <h2>Alertas de humo</h2>
+  </header>
+
+  @if (loading()) {
+    <div class="sp-card">Cargando alertas…</div>
+  } @else {
+    <sp-alert-panel [alerts]="alerts()" />
+  }
+</section>

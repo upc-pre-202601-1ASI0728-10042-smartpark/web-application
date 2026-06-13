@@ -31,6 +31,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/zones/zone-detail-page').then((m) => m.ZoneDetailPage),
       },
+      {
+        path: 'alerts',
+        loadComponent: () =>
+          import('./features/alerts/alerts-page').then((m) => m.AlertsPage),
+      },
     ],
   },
   { path: '**', redirectTo: '' },
