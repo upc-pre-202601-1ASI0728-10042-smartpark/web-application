@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ToastContainer } from '../../shared/toast/toast-container';
 
 interface NavItem {
   label: string;
@@ -13,7 +14,7 @@ interface NavItem {
  */
 @Component({
   selector: 'sp-main-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ToastContainer],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss',
 })

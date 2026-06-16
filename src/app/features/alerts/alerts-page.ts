@@ -4,6 +4,7 @@ import { AlertService } from './alert.service';
 import { RealtimeAlertsService } from './realtime-alerts.service';
 import { SmokeAlert, SmokeAlertEvent } from './alert.models';
 import { AlertPanel } from './components/alert-panel/alert-panel';
+import { ToastService } from '../../shared/toast/toast.service';
 
 /** Página de monitoreo de alertas de humo, con actualización en tiempo real. */
 @Component({
@@ -15,6 +16,7 @@ import { AlertPanel } from './components/alert-panel/alert-panel';
 export class AlertsPage implements OnInit, OnDestroy {
   private readonly alertService = inject(AlertService);
   private readonly realtime = inject(RealtimeAlertsService);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly alerts = signal<SmokeAlert[]>([]);
@@ -56,5 +58,10 @@ export class AlertsPage implements OnInit, OnDestroy {
       incoming,
       ...list.filter((a) => a.detectorId !== incoming.detectorId),
     ]);
+    this.toast.show(
+      '🔥 Alerta de humo',
+      `Zona ${event.zoneId} · ${Math.round(event.smokeLevel)} ppm`,
+      'danger',
+    );
   }
 }
