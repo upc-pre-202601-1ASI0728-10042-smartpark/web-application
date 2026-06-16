@@ -1,0 +1,11 @@
+<div class="toasts">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <div class="toast" [class]="'toast--' + toast.tone">
+      <div class="toast__body">
+        <strong class="toast__title">{{ toast.title }}</strong>
+        <span class="toast__message">{{ toast.message }}</span>
+      </div>
+      <button class="toast__close" type="button" (click)="toastService.dismiss(toast.id)">×</button>
+    </div>
+  }
+</div>

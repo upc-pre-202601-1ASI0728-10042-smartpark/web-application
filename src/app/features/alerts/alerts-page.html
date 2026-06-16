@@ -1,0 +1,15 @@
+<section class="alerts-page">
+  <header class="alerts-page__header">
+    <h2>Alertas de humo</h2>
+    <span class="conn" [class.conn--on]="connected()">
+      <i class="conn__dot"></i>
+      {{ connected() ? 'En vivo' : 'Sin conexión en vivo' }}
+    </span>
+  </header>
+
+  @if (loading()) {
+    <div class="sp-card">Cargando alertas…</div>
+  } @else {
+    <sp-alert-panel [alerts]="alerts()" />
+  }
+</section>
