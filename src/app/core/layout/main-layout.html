@@ -36,7 +36,16 @@
       </button>
       <h1 class="topbar__title">Panel del Operador</h1>
       <div class="topbar__spacer"></div>
-      <span class="topbar__user">Operador</span>
+      @if (user(); as u) {
+        <div class="topbar__user">
+          <span class="topbar__avatar">{{ u.fullName.charAt(0) }}</span>
+          <span class="topbar__userinfo">
+            <span class="topbar__name">{{ u.fullName }}</span>
+            <span class="topbar__role">{{ u.role }}</span>
+          </span>
+        </div>
+        <button class="topbar__logout" type="button" (click)="logout()">Salir</button>
+      }
     </header>
 
     <main class="main">
