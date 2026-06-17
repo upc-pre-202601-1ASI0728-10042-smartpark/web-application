@@ -82,9 +82,39 @@
 .topbar__title { font-size: 1.1rem; margin: 0; }
 .topbar__spacer { flex: 1; }
 .topbar__user {
-  font-weight: 600;
-  color: var(--sp-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
+.topbar__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--sp-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.topbar__userinfo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.topbar__name { font-weight: 600; font-size: 0.9rem; }
+.topbar__role { font-size: 0.75rem; color: var(--sp-text-muted); }
+.topbar__logout {
+  border: 1px solid var(--sp-border);
+  background: var(--sp-surface);
+  border-radius: 8px;
+  padding: 0.45rem 0.85rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--sp-text);
+}
+.topbar__logout:hover { background: var(--sp-bg); }
 
 .main {
   flex: 1;
