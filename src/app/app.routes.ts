@@ -1,18 +1,18 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './core/layout/main-layout';
-import { authGuard, roleGuard } from './core/auth/auth.guard';
+import { authGuard, loginGuard, roleGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   {
     path: 'login',
+    canActivate: [loginGuard],
     loadComponent: () =>
       import('./features/auth/login/login-page').then((m) => m.LoginPage),
   },
   {
     path: '',
     component: MainLayout,
-    canActivate: [authGuard],
-    canActivateChild: [roleGuard],
+    canActivate: [authGuard, roleGuard],
     data: { roles: ['Operator'] },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
