@@ -24,3 +24,16 @@ export interface SmokeAlertEvent {
   detectedAt: string;
   affectedOccupiedSpaces: string[];
 }
+
+/** Convierte un evento en vivo en una alerta mostrable en el panel. */
+export function toSmokeAlert(event: SmokeAlertEvent): SmokeAlert {
+  return {
+    detectorId: event.detectorId,
+    zoneId: event.zoneId,
+    levelNumber: event.levelNumber,
+    smokeDetected: true,
+    smokeLevel: event.smokeLevel,
+    status: 'Alert',
+    lastReading: event.detectedAt,
+  };
+}
