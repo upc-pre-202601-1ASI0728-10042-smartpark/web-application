@@ -34,3 +34,13 @@ export interface ParkingSpace {
   spaceType: string;
   lastUpdated: string;
 }
+
+/** Etiqueta en español para el nivel de congestión. */
+export function congestionLabel(level: CongestionLevel): string {
+  return { Low: 'Baja', Medium: 'Media', High: 'Alta', Full: 'Llena' }[level] ?? level;
+}
+
+/** Etiqueta en español para el estado de un espacio. */
+export function occupancyStateLabel(state: OccupancyState): string {
+  return { Free: 'Libre', Occupied: 'Ocupado', Reserved: 'Reservado', Unknown: 'Sin dato' }[state] ?? state;
+}

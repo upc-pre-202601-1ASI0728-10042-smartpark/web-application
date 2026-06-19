@@ -1,23 +1,45 @@
 <section class="dashboard">
   <header class="dashboard__header">
-    <h2>Dashboard de ocupación</h2>
-    <button class="sp-btn sp-btn--primary" type="button" (click)="load()" [disabled]="loading()">
-      {{ loading() ? 'Actualizando…' : '↻ Actualizar' }}
+    <div>
+      <h1>Dashboard de ocupación</h1>
+      @if (lastUpdated(); as t) {
+        <p class="dashboard__updated">Actualizado a las {{ t | date: 'HH:mm:ss' }}</p>
+      }
+    </div>
+    <button class="sp-btn sp-btn--ghost" type="button" (click)="refresh()" [disabled]="loading()">
+      <sp-icon name="refresh" [size]="16" />
+      {{ loading() ? 'Actualizando…' : 'Actualizar' }}
     </button>
   </header>
 
   @if (degraded()) {
-    <div class="dashboard__banner sp-card">
-      ⚠️ Modo degradado: el gemelo digital no responde. Se muestra el último estado conocido.
+    <div class="sp-alert sp-alert--warning dashboard__banner" role="status">
+      <sp-icon name="warning" [size]="18" />
+      Modo degradado: el gemelo digital no responde. Se muestra el último estado conocido.
     </div>
   }
 
-  @if (loading() && !summary()) {
-    <div class="dashboard__state sp-card">Cargando datos de ocupación…</div>
-  } @else if (error()) {
-    <div class="dashboard__state dashboard__state--error sp-card">
-      {{ error() }}
-      <button class="sp-btn sp-btn--primary" type="button" (click)="load()">Reintentar</button>
+  @if (loading() && !summary() && !degraded() && !error()) {
+    <!-- Skeleton de primera carga -->
+    <div class="dashboard__grid">
+      <sp-skeleton height="160px" radius="var(--sp-radius)" />
+      <div class="dashboard__cards-skeleton">
+        <sp-skeleton height="96px" radius="var(--sp-radius)" />
+        <sp-skeleton height="96px" radius="var(--sp-radius)" />
+        <sp-skeleton height="96px" radius="var(--sp-radius)" />
+      </div>
+    </div>
+    <sp-skeleton height="140px" radius="var(--sp-radius)" />
+  } @else if (error() && !summary()) {
+    <div class="sp-card">
+      <sp-empty-state
+        icon="warning"
+        tone="danger"
+        title="No se pudo cargar la ocupación"
+        [message]="error()!"
+      >
+        <button class="sp-btn sp-btn--primary" type="button" (click)="refresh()">Reintentar</button>
+      </sp-empty-state>
     </div>
   } @else if (summary(); as s) {
     <div class="dashboard__grid">
@@ -27,5 +49,15 @@
       </div>
     </div>
     <sp-zone-overview [zones]="zones()" />
+  } @else if (degraded()) {
+    <div class="sp-card">
+      <sp-empty-state
+        icon="wifi-off"
+        title="Sin datos disponibles"
+        message="El gemelo digital no responde y aún no hay un estado previo que mostrar."
+      >
+        <button class="sp-btn sp-btn--primary" type="button" (click)="refresh()">Reintentar</button>
+      </sp-empty-state>
+    </div>
   }
 </section>
