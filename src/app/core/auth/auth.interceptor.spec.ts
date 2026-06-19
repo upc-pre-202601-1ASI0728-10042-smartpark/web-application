@@ -2,7 +2,10 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
+import { environment } from '../../../environments/environment';
 import { authInterceptor } from './auth.interceptor';
+
+const API_URL = `${environment.apiBaseUrl}/occupancy/summary`;
 
 describe('authInterceptor', () => {
   let http: HttpClient;
@@ -25,13 +28,13 @@ describe('authInterceptor', () => {
     localStorage.clear();
   });
 
-  it('attaches the Bearer token when a session exists', () => {
+  it('attaches the Bearer token to API calls when a session exists', () => {
     localStorage.setItem('smartpark.token', 'jwt-abc');
     configure();
 
-    http.get('/api/v1/occupancy/summary').subscribe();
+    http.get(API_URL).subscribe();
 
-    const req = httpMock.expectOne('/api/v1/occupancy/summary');
+    const req = httpMock.expectOne(API_URL);
     expect(req.request.headers.get('Authorization')).toBe('Bearer jwt-abc');
     req.flush({});
   });
@@ -40,9 +43,20 @@ describe('authInterceptor', () => {
     localStorage.clear();
     configure();
 
-    http.get('/api/v1/occupancy/summary').subscribe();
+    http.get(API_URL).subscribe();
 
-    const req = httpMock.expectOne('/api/v1/occupancy/summary');
+    const req = httpMock.expectOne(API_URL);
+    expect(req.request.headers.has('Authorization')).toBeFalse();
+    req.flush({});
+  });
+
+  it('does not attach the token to third-party URLs', () => {
+    localStorage.setItem('smartpark.token', 'jwt-abc');
+    configure();
+
+    http.get('https://example.com/data').subscribe();
+
+    const req = httpMock.expectOne('https://example.com/data');
     expect(req.request.headers.has('Authorization')).toBeFalse();
     req.flush({});
   });
