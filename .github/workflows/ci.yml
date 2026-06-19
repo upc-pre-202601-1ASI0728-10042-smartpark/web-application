@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint build (production)
+        run: npm run build -- --configuration production
+
+      - name: Unit tests
+        run: npm test -- --watch=false --browsers=ChromeHeadless
