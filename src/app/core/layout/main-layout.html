@@ -1,54 +1,124 @@
-<div class="layout" [class.layout--collapsed]="collapsed()">
-  <aside class="sidenav">
+<a class="sp-skip-link" href="#main-content">Saltar al contenido</a>
+
+<div class="layout" [class.layout--collapsed]="collapsed()" [class.layout--mobile-open]="mobileOpen()">
+  <aside id="sidenav" class="sidenav">
     <div class="brand">
-      <span class="brand__logo">🅿️</span>
+      <span class="brand__logo"><sp-icon name="parking" [size]="26" /></span>
       @if (!collapsed()) {
         <span class="brand__name">SmartPark</span>
       }
     </div>
 
-    <nav class="nav">
+    <nav class="nav" aria-label="Navegación principal">
       @for (item of nav; track item.path) {
         <a
           class="nav__item"
           [routerLink]="item.path"
           routerLinkActive="nav__item--active"
+          [attr.aria-label]="item.label"
+          (click)="closeMobile()"
         >
-          <span class="nav__icon">{{ item.icon }}</span>
-          @if (!collapsed()) {
-            <span class="nav__label">{{ item.label }}</span>
-          }
+          <span class="nav__icon"><sp-icon [name]="item.icon" [size]="20" /></span>
+          <span class="nav__label" [class.sp-visually-hidden]="collapsed()">{{ item.label }}</span>
         </a>
       }
     </nav>
 
     <div class="sidenav__footer">
-      @if (!collapsed()) {
-        <span>Apex Twin · v1</span>
-      }
+      <span class="conn" [class.conn--on]="connected()" aria-live="polite">
+        <sp-icon [name]="connected() ? 'wifi' : 'wifi-off'" [size]="16" />
+        @if (!collapsed()) {
+          <span>{{ connected() ? 'Tiempo real activo' : 'Sin conexión en vivo' }}</span>
+        }
+      </span>
     </div>
   </aside>
 
+  @if (mobileOpen()) {
+    <div class="backdrop" (click)="closeMobile()" aria-hidden="true"></div>
+  }
+
   <div class="content">
-    <header class="topbar">
-      <button class="topbar__toggle" type="button" (click)="toggle()" aria-label="Alternar menú">
-        ☰
+    <header class="topbar" role="banner">
+      <button
+        class="iconbtn topbar__menu"
+        type="button"
+        (click)="toggleMobile()"
+        aria-label="Abrir menú"
+        [attr.aria-expanded]="mobileOpen()"
+        aria-controls="sidenav"
+      >
+        <sp-icon name="menu" [size]="22" />
       </button>
-      <h1 class="topbar__title">Panel del Operador</h1>
+      <button
+        class="iconbtn topbar__collapse"
+        type="button"
+        (click)="toggle()"
+        aria-label="Plegar o desplegar menú"
+      >
+        <sp-icon name="menu" [size]="22" />
+      </button>
+
+      <span class="topbar__title">Panel del Operador</span>
       <div class="topbar__spacer"></div>
+
+      <!-- Campana de notificaciones -->
+      <div class="bell">
+        <button
+          class="iconbtn bell__btn"
+          type="button"
+          (click)="toggleBell()"
+          [attr.aria-label]="'Notificaciones' + (store.unread() ? ', ' + store.unread() + ' sin leer' : '')"
+          [attr.aria-expanded]="bellOpen()"
+        >
+          <sp-icon name="bell" [size]="20" />
+          @if (store.hasUnread()) {
+            <span class="bell__badge">{{ store.unread() }}</span>
+          }
+        </button>
+
+        @if (bellOpen()) {
+          <div class="backdrop backdrop--transparent" (click)="closeBell()" aria-hidden="true"></div>
+          <div class="bell__panel" role="dialog" aria-label="Notificaciones recientes">
+            <div class="bell__head">Alertas recientes</div>
+            @if (store.alerts().length === 0) {
+              <p class="bell__empty">Sin alertas por ahora.</p>
+            } @else {
+              <ul class="bell__list">
+                @for (a of store.alerts(); track a.detectorId) {
+                  <li class="bell__item">
+                    <span class="bell__item-icon"><sp-icon name="flame" [size]="16" /></span>
+                    <div>
+                      <strong>Zona {{ a.zoneId }}</strong>
+                      <span class="bell__item-meta">
+                        {{ a.detectorId }} · {{ a.lastReading | date: 'short' }}
+                      </span>
+                    </div>
+                  </li>
+                }
+              </ul>
+              <a class="bell__link" routerLink="/alerts" (click)="closeBell()">Ver todas las alertas</a>
+            }
+          </div>
+        }
+      </div>
+
       @if (user(); as u) {
         <div class="topbar__user">
           <span class="topbar__avatar">{{ u.fullName.charAt(0) }}</span>
           <span class="topbar__userinfo">
             <span class="topbar__name">{{ u.fullName }}</span>
-            <span class="topbar__role">{{ u.role }}</span>
+            <span class="topbar__role">{{ u.role === 'Operator' ? 'Operador' : 'Conductor' }}</span>
           </span>
         </div>
-        <button class="topbar__logout" type="button" (click)="logout()">Salir</button>
+        <button class="sp-btn sp-btn--ghost topbar__logout" type="button" (click)="logout()">
+          <sp-icon name="logout" [size]="16" />
+          <span class="topbar__logout-text">Salir</span>
+        </button>
       }
     </header>
 
-    <main class="main">
+    <main id="main-content" class="main" tabindex="-1">
       <router-outlet />
     </main>
   </div>
