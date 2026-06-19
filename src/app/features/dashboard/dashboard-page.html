@@ -1,0 +1,31 @@
+<section class="dashboard">
+  <header class="dashboard__header">
+    <h2>Dashboard de ocupación</h2>
+    <button class="sp-btn sp-btn--primary" type="button" (click)="load()" [disabled]="loading()">
+      {{ loading() ? 'Actualizando…' : '↻ Actualizar' }}
+    </button>
+  </header>
+
+  @if (degraded()) {
+    <div class="dashboard__banner sp-card">
+      ⚠️ Modo degradado: el gemelo digital no responde. Se muestra el último estado conocido.
+    </div>
+  }
+
+  @if (loading() && !summary()) {
+    <div class="dashboard__state sp-card">Cargando datos de ocupación…</div>
+  } @else if (error()) {
+    <div class="dashboard__state dashboard__state--error sp-card">
+      {{ error() }}
+      <button class="sp-btn sp-btn--primary" type="button" (click)="load()">Reintentar</button>
+    </div>
+  } @else if (summary(); as s) {
+    <div class="dashboard__grid">
+      <sp-occupancy-gauge [rate]="s.occupancyRate" />
+      <div class="dashboard__cards">
+        <sp-summary-cards [summary]="s" />
+      </div>
+    </div>
+    <sp-zone-overview [zones]="zones()" />
+  }
+</section>

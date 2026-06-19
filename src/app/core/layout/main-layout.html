@@ -1,0 +1,57 @@
+<div class="layout" [class.layout--collapsed]="collapsed()">
+  <aside class="sidenav">
+    <div class="brand">
+      <span class="brand__logo">🅿️</span>
+      @if (!collapsed()) {
+        <span class="brand__name">SmartPark</span>
+      }
+    </div>
+
+    <nav class="nav">
+      @for (item of nav; track item.path) {
+        <a
+          class="nav__item"
+          [routerLink]="item.path"
+          routerLinkActive="nav__item--active"
+        >
+          <span class="nav__icon">{{ item.icon }}</span>
+          @if (!collapsed()) {
+            <span class="nav__label">{{ item.label }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="sidenav__footer">
+      @if (!collapsed()) {
+        <span>Apex Twin · v1</span>
+      }
+    </div>
+  </aside>
+
+  <div class="content">
+    <header class="topbar">
+      <button class="topbar__toggle" type="button" (click)="toggle()" aria-label="Alternar menú">
+        ☰
+      </button>
+      <h1 class="topbar__title">Panel del Operador</h1>
+      <div class="topbar__spacer"></div>
+      @if (user(); as u) {
+        <div class="topbar__user">
+          <span class="topbar__avatar">{{ u.fullName.charAt(0) }}</span>
+          <span class="topbar__userinfo">
+            <span class="topbar__name">{{ u.fullName }}</span>
+            <span class="topbar__role">{{ u.role }}</span>
+          </span>
+        </div>
+        <button class="topbar__logout" type="button" (click)="logout()">Salir</button>
+      }
+    </header>
+
+    <main class="main">
+      <router-outlet />
+    </main>
+  </div>
+
+  <sp-toast-container />
+</div>

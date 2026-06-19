@@ -1,0 +1,31 @@
+<section class="zones-list">
+  <header class="zones-list__header">
+    <h2>Zonas del estacionamiento</h2>
+  </header>
+
+  @if (loading()) {
+    <div class="sp-card">Cargando zonas…</div>
+  } @else {
+    <div class="zones-list__grid">
+      @for (zone of zones(); track zone.zoneId) {
+        <a class="zone-card sp-card" [routerLink]="['/zones', zone.zoneId]">
+          <div class="zone-card__top">
+            <span class="zone-card__code">{{ zone.code }}</span>
+            <span class="sp-badge" [class]="badgeClass(zone.congestionLevel)">
+              {{ zone.congestionLevel }}
+            </span>
+          </div>
+          <span class="zone-card__level">Nivel {{ zone.levelNumber }}</span>
+          <div class="zone-card__metric">
+            <strong>{{ zone.occupiedSpaces }}</strong> / {{ zone.totalSpaces }} ocupados
+          </div>
+          <div class="zone-card__bar">
+            <div class="zone-card__fill" [style.width.%]="percent(zone)"></div>
+          </div>
+        </a>
+      } @empty {
+        <div class="sp-card">No hay zonas registradas.</div>
+      }
+    </div>
+  }
+</section>

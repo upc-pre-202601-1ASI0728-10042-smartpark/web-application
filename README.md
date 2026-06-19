@@ -1,59 +1,68 @@
-# WebApplication
+# SmartPark · Web Application (Panel del Operador)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.4.
+Aplicación web del operador de **SmartPark (Apex Twin)**, construida con
+**Angular 20** (standalone components, signals y control-flow nativo). Consume la
+API de [`web-services`](https://github.com/upc-pre-202601-1ASI0728-10042-smartpark/web-services)
+y muestra, en tiempo real, la ocupación del estacionamiento y las alertas de humo.
 
-## Development server
+## Funcionalidades
 
-To start a local development server, run:
+- **Autenticación JWT** con guardas de ruta por rol (`Operator`).
+- **Dashboard de ocupación**: indicador global, tarjetas de resumen y desglose por
+  zonas, con manejo de *modo degradado* cuando el gemelo digital no responde (503).
+- **Zonas**: listado con nivel de congestión y detalle con grilla de espacios
+  filtrable por estado.
+- **Alertas de humo**: panel de alertas activas que se actualiza **en tiempo real**
+  vía **SignalR**, con notificaciones *toast* ante cada nueva alerta.
 
-```bash
-ng serve
+## Arquitectura (feature-based)
+
+```
+src/app/
+├── core/                     # Transversal de la app
+│   ├── auth/                 #   AuthService, interceptor JWT, guards, modelos
+│   └── layout/               #   Shell (sidenav + toolbar)
+├── features/                 # Bounded contexts del dominio
+│   ├── auth/login/           #   Inicio de sesión
+│   ├── dashboard/            #   Página principal de ocupación
+│   ├── occupancy/            #   Servicio, modelos y componentes de ocupación
+│   ├── zones/                #   Listado y detalle de zonas
+│   └── alerts/               #   Alertas de humo (REST + SignalR)
+├── shared/                   # Componentes reutilizables (toasts)
+└── environments/             # Configuración por entorno (API y hub)
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Cada *feature* encapsula sus modelos, su servicio de acceso a la API y sus
+componentes. Los servicios de dominio se inyectan con `inject()` y el estado se
+maneja con **signals**.
 
-## Code scaffolding
+## API consumida
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+| Vista        | Endpoint                                  |
+|--------------|-------------------------------------------|
+| Login        | `POST /api/v1/auth/login`                 |
+| Dashboard    | `GET /api/v1/occupancy/summary`, `/zones` |
+| Zonas        | `GET /api/v1/occupancy/zones`             |
+| Detalle zona | `GET /api/v1/occupancy/zones/{id}/spaces` |
+| Alertas      | `GET /api/v1/alerts/smoke`                |
+| Tiempo real  | SignalR hub `/hubs/alerts` (`smokeAlert`) |
 
-```bash
-ng generate component component-name
-```
+La URL base de la API y del hub se configura en `src/environments/`.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Desarrollo
 
 ```bash
-ng test
+npm install
+npm start                 # ng serve → http://localhost:4200
+npm run build             # build de producción en dist/
+npm test -- --watch=false # pruebas unitarias (Karma + Jasmine, ChromeHeadless)
 ```
 
-## Running end-to-end tests
+## Ramas
+- `main` — releases estables.
+- `develop` — rama de integración (los PRs apuntan aquí).
+- `feature/*` — trabajo en curso por funcionalidad.
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## CI
+`.github/workflows/ci.yml`: instala dependencias, compila en modo producción y
+ejecuta las pruebas unitarias en cada push/PR a `develop` y `main`.

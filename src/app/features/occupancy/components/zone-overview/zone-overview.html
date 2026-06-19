@@ -1,0 +1,26 @@
+<div class="zones sp-card">
+  <h3 class="zones__title">Ocupación por zona</h3>
+
+  @if (zones().length === 0) {
+    <p class="zones__empty">No hay zonas para mostrar.</p>
+  } @else {
+    <ul class="zones__list">
+      @for (zone of zones(); track zone.zoneId) {
+        <li class="zone">
+          <div class="zone__head">
+            <span class="zone__code">{{ zone.code }}</span>
+            <span class="zone__level">Nivel {{ zone.levelNumber }}</span>
+            <span class="zone__count">{{ zone.occupiedSpaces }}/{{ zone.totalSpaces }}</span>
+          </div>
+          <div class="zone__bar">
+            <div
+              class="zone__fill"
+              [class]="toneClass(zone.congestionLevel)"
+              [style.width.%]="percent(zone)"
+            ></div>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>

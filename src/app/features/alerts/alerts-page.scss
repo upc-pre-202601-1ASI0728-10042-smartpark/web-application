@@ -1,0 +1,30 @@
+.alerts-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+.alerts-page__header h2 {
+  margin: 0;
+}
+.conn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--sp-text-muted);
+}
+.conn__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #b0b8c4;
+}
+.conn--on .conn__dot {
+  background: var(--sp-success);
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.18);
+}
+.conn--on {
+  color: var(--sp-success);
+}
