@@ -9,6 +9,43 @@
     </div>
   </header>
 
+  <div class="sim__guide sp-card">
+    <div class="sim__guide-head">
+      <sp-icon name="activity" [size]="18" />
+      <strong>¿Cómo usar el simulador?</strong>
+    </div>
+    <p class="sim__guide-intro">
+      Este panel reemplaza a los sensores IoT físicos para demostrar el sistema en vivo durante las
+      entrevistas de validación. Sigue estos pasos:
+    </p>
+    <ol class="sim__steps">
+      <li>
+        <span class="sim__step-n">1</span>
+        <div>
+          <strong>Alerta de humo.</strong> Elige una <em>zona</em> y el nivel de humo en <em>ppm</em>,
+          y pulsa <em>“Disparar alerta”</em>. O activa <em>“Humo automático”</em> para emitir una
+          alerta aleatoria cada 7 s.
+        </div>
+      </li>
+      <li>
+        <span class="sim__step-n">2</span>
+        <div>
+          <strong>Ocupación.</strong> Pulsa <em>“Simular movimiento”</em> para que entren y salgan
+          vehículos (cambia plazas libres/ocupadas). O activa <em>“Ocupación automática”</em> cada 4 s.
+        </div>
+      </li>
+      <li>
+        <span class="sim__step-n">3</span>
+        <div>
+          <strong>Dónde verlo.</strong> Las alertas de humo aparecen como <em>toast</em> y en la
+          <em>campana</em> 🔔, y se listan en <em>“Alertas de humo”</em>. La ocupación se refleja en
+          <em>Dashboard</em> y <em>Zonas</em>, y en el <em>Gemelo&nbsp;3D</em> (pulsa allí
+          <em>“Actualizar ocupación”</em> para ver las plazas cambiar de color).
+        </div>
+      </li>
+    </ol>
+  </div>
+
   <div class="sim__grid">
     <div class="sim__col">
       <!-- Humo -->
