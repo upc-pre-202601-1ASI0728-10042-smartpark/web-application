@@ -6,20 +6,32 @@ import { SimulatorService } from './simulator.service';
 import { ToastService } from '../../shared/toast/toast.service';
 import { Icon } from '../../shared/ui/icon';
 
+interface ZoneOption {
+  id: string;
+  label: string;
+  level: number;
+  code: string;
+}
+
 interface LogEntry {
   time: Date;
-  zone: string;
-  detector: string;
-  ppm: number;
+  kind: 'smoke' | 'occupancy';
+  text: string;
   ok: boolean;
 }
 
-const ZONES = ['Z-A', 'Z-B', 'Z-C', 'Z-D'];
+/** Zonas canónicas (coherentes con layout.json y el modelo 3D). */
+const ZONES: ZoneOption[] = [
+  { id: 'ZONE-L1-A', label: 'Nivel 1 · Zona A', level: 1, code: 'A' },
+  { id: 'ZONE-L1-B', label: 'Nivel 1 · Zona B', level: 1, code: 'B' },
+  { id: 'ZONE-L2-A', label: 'Nivel 2 · Zona A', level: 2, code: 'A' },
+  { id: 'ZONE-L2-B', label: 'Nivel 2 · Zona B', level: 2, code: 'B' },
+];
 
 /**
- * Panel para accionar el simulador IoT desde la UI. Emite eventos de humo hacia
- * el backend (ingesta) para demostrar el flujo en tiempo real (alerta → SignalR
- * → toast/campana) durante las entrevistas de validación.
+ * Panel del simulador IoT: emite alertas de humo Y simula movimiento de
+ * vehículos (ocupación), demostrando el flujo completo en vivo (SignalR,
+ * dashboard y gemelo 3D) durante las entrevistas de validación.
  */
 @Component({
   selector: 'sp-simulator-page',
@@ -35,78 +47,93 @@ export class SimulatorPage implements OnDestroy {
 
   protected readonly zones = ZONES;
   protected readonly sending = signal(false);
-  protected readonly auto = signal(false);
+  protected readonly smokeAuto = signal(false);
+  protected readonly occAuto = signal(false);
   protected readonly log = signal<LogEntry[]>([]);
-  private autoTimer?: ReturnType<typeof setInterval>;
-  private seq = 1;
+  private smokeTimer?: ReturnType<typeof setInterval>;
+  private occTimer?: ReturnType<typeof setInterval>;
 
   protected readonly form = this.fb.nonNullable.group({
-    zoneId: ['Z-A', Validators.required],
-    detectorId: ['SD-L1-01', Validators.required],
-    levelNumber: [1, [Validators.required, Validators.min(1)]],
+    zoneId: ['ZONE-L1-A', Validators.required],
     smokeLevel: [420, [Validators.required, Validators.min(0)]],
   });
 
-  fire(): void {
-    if (this.form.invalid || this.sending()) return;
+  // ---- Humo ----
+  fireSmoke(): void {
+    if (this.form.invalid) return;
     const v = this.form.getRawValue();
-    this.send(v.zoneId, v.detectorId, v.levelNumber, v.smokeLevel, []);
+    const zone = ZONES.find((z) => z.id === v.zoneId) ?? ZONES[0];
+    this.sendSmoke(zone, v.smokeLevel);
   }
 
-  toggleAuto(): void {
-    if (this.auto()) {
-      this.stopAuto();
+  toggleSmokeAuto(): void {
+    if (this.smokeAuto()) {
+      this.smokeAuto.set(false);
+      if (this.smokeTimer) clearInterval(this.smokeTimer);
       return;
     }
-    this.auto.set(true);
-    // Emite una alerta aleatoria cada 6 s, imitando el bucle del simulador.
-    this.autoTimer = setInterval(() => this.fireRandom(), 6000);
-    this.fireRandom();
+    this.smokeAuto.set(true);
+    this.smokeTimer = setInterval(() => this.fireRandomSmoke(), 7000);
+    this.fireRandomSmoke();
   }
 
-  private fireRandom(): void {
+  private fireRandomSmoke(): void {
     const zone = ZONES[Math.floor(Math.random() * ZONES.length)];
-    const level = 1 + Math.floor(Math.random() * 2);
-    const detector = `SD-L${level}-0${1 + Math.floor(Math.random() * 6)}`;
-    const ppm = 250 + Math.floor(Math.random() * 350);
-    this.send(zone, detector, level, ppm, []);
+    this.sendSmoke(zone, 250 + Math.floor(Math.random() * 350));
   }
 
-  private send(zone: string, detector: string, level: number, ppm: number, spaces: string[]): void {
-    this.sending.set(true);
+  private sendSmoke(zone: ZoneOption, ppm: number): void {
     this.simulator
       .triggerSmoke({
-        detectorId: detector,
-        zoneId: zone,
-        levelNumber: level,
+        detectorId: `SMOKE-L${zone.level}-${zone.code}`,
+        zoneId: zone.id,
+        levelNumber: zone.level,
         smokeLevel: ppm,
         detectedAt: new Date().toISOString(),
-        affectedOccupiedSpaces: spaces,
+        affectedOccupiedSpaces: [],
       })
       .subscribe({
-        next: () => {
-          this.sending.set(false);
-          this.pushLog(zone, detector, ppm, true);
-        },
-        error: (err: HttpErrorResponse) => {
-          this.sending.set(false);
-          this.pushLog(zone, detector, ppm, false);
-          this.toast.show('Simulador', `No se pudo emitir la alerta (HTTP ${err.status}).`, 'danger');
+        next: () => this.pushLog('smoke', `Humo en ${zone.label} · ${ppm} ppm`, true),
+        error: (e: HttpErrorResponse) => {
+          this.pushLog('smoke', `Humo en ${zone.label} (error ${e.status})`, false);
+          this.toast.show('Simulador', `No se pudo emitir la alerta (HTTP ${e.status}).`, 'danger');
         },
       });
   }
 
-  private pushLog(zone: string, detector: string, ppm: number, ok: boolean): void {
-    this.log.update((list) => [{ time: new Date(), zone, detector, ppm, ok }, ...list].slice(0, 30));
+  // ---- Ocupación ----
+  simulateOccupancy(): void {
+    this.sending.set(true);
+    this.simulator.simulateOccupancy().subscribe({
+      next: () => {
+        this.sending.set(false);
+        this.pushLog('occupancy', 'Movimiento de vehículos (entradas/salidas)', true);
+      },
+      error: (e: HttpErrorResponse) => {
+        this.sending.set(false);
+        this.pushLog('occupancy', `Ocupación (error ${e.status})`, false);
+        this.toast.show('Simulador', `No se pudo simular la ocupación (HTTP ${e.status}).`, 'danger');
+      },
+    });
   }
 
-  private stopAuto(): void {
-    this.auto.set(false);
-    if (this.autoTimer) clearInterval(this.autoTimer);
-    this.autoTimer = undefined;
+  toggleOccAuto(): void {
+    if (this.occAuto()) {
+      this.occAuto.set(false);
+      if (this.occTimer) clearInterval(this.occTimer);
+      return;
+    }
+    this.occAuto.set(true);
+    this.occTimer = setInterval(() => this.simulateOccupancy(), 4000);
+    this.simulateOccupancy();
+  }
+
+  private pushLog(kind: LogEntry['kind'], text: string, ok: boolean): void {
+    this.log.update((list) => [{ time: new Date(), kind, text, ok }, ...list].slice(0, 30));
   }
 
   ngOnDestroy(): void {
-    this.stopAuto();
+    if (this.smokeTimer) clearInterval(this.smokeTimer);
+    if (this.occTimer) clearInterval(this.occTimer);
   }
 }

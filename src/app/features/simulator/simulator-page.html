@@ -3,71 +3,73 @@
     <div>
       <h1>Simulador IoT</h1>
       <p class="sim__subtitle">
-        Emite eventos de humo para demostrar el flujo en tiempo real (alerta → SignalR → toast).
+        Emite alertas de humo y simula movimiento de vehículos para demostrar el sistema en vivo
+        (SignalR, dashboard y gemelo 3D).
       </p>
     </div>
-    <span class="sim__badge" [class.sim__badge--on]="auto()">
-      <sp-icon name="activity" [size]="16" />
-      {{ auto() ? 'Automático activo' : 'Inactivo' }}
-    </span>
   </header>
 
   <div class="sim__grid">
-    <form class="sp-card sim__form" [formGroup]="form" (ngSubmit)="fire()">
-      <h3 class="sim__card-title">Emitir alerta de humo</h3>
-
-      <label class="field">
-        <span>Zona</span>
-        <select formControlName="zoneId">
-          @for (z of zones; track z) { <option [value]="z">{{ z }}</option> }
-        </select>
-      </label>
-
-      <label class="field">
-        <span>Detector</span>
-        <input type="text" formControlName="detectorId" placeholder="SD-L1-01" />
-      </label>
-
-      <div class="field-row">
+    <div class="sim__col">
+      <!-- Humo -->
+      <form class="sp-card sim__form" [formGroup]="form" (ngSubmit)="fireSmoke()">
+        <h3 class="sim__card-title">Alerta de humo</h3>
         <label class="field">
-          <span>Nivel</span>
-          <input type="number" formControlName="levelNumber" min="1" />
+          <span>Zona</span>
+          <select formControlName="zoneId">
+            @for (z of zones; track z.id) { <option [value]="z.id">{{ z.label }}</option> }
+          </select>
         </label>
         <label class="field">
           <span>Humo (ppm)</span>
           <input type="number" formControlName="smokeLevel" min="0" step="10" />
         </label>
+        <button class="sp-btn sp-btn--danger sim__btn" type="submit">
+          <sp-icon name="flame" [size]="16" /> Disparar alerta
+        </button>
+        <button
+          class="sp-btn sim__btn"
+          [class.sp-btn--danger]="smokeAuto()"
+          [class.sp-btn--ghost]="!smokeAuto()"
+          type="button"
+          (click)="toggleSmokeAuto()"
+        >
+          <sp-icon [name]="smokeAuto() ? 'stop' : 'play'" [size]="16" />
+          {{ smokeAuto() ? 'Detener humo automático' : 'Humo automático (7s)' }}
+        </button>
+      </form>
+
+      <!-- Ocupación -->
+      <div class="sp-card sim__form">
+        <h3 class="sim__card-title">Ocupación (entradas / salidas)</h3>
+        <p class="sim__note">Cambia plazas ocupadas/libres; se refleja en el dashboard y el gemelo 3D.</p>
+        <button class="sp-btn sp-btn--primary sim__btn" type="button" [disabled]="sending()" (click)="simulateOccupancy()">
+          <sp-icon name="activity" [size]="16" />
+          {{ sending() ? 'Simulando…' : 'Simular movimiento' }}
+        </button>
+        <button
+          class="sp-btn sim__btn"
+          [class.sp-btn--primary]="occAuto()"
+          [class.sp-btn--ghost]="!occAuto()"
+          type="button"
+          (click)="toggleOccAuto()"
+        >
+          <sp-icon [name]="occAuto() ? 'stop' : 'play'" [size]="16" />
+          {{ occAuto() ? 'Detener ocupación automática' : 'Ocupación automática (4s)' }}
+        </button>
       </div>
-
-      <button class="sp-btn sp-btn--primary sim__fire" type="submit" [disabled]="sending() || form.invalid">
-        <sp-icon name="flame" [size]="16" />
-        {{ sending() ? 'Emitiendo…' : 'Disparar alerta' }}
-      </button>
-
-      <button
-        class="sp-btn sim__auto"
-        [class.sp-btn--danger]="auto()"
-        [class.sp-btn--ghost]="!auto()"
-        type="button"
-        (click)="toggleAuto()"
-      >
-        <sp-icon [name]="auto() ? 'stop' : 'play'" [size]="16" />
-        {{ auto() ? 'Detener modo automático' : 'Modo automático (cada 6s)' }}
-      </button>
-    </form>
+    </div>
 
     <div class="sp-card sim__log">
       <h3 class="sim__card-title">Eventos emitidos</h3>
       @if (log().length === 0) {
-        <p class="sim__empty">Aún no se han emitido alertas.</p>
+        <p class="sim__empty">Aún no se han emitido eventos.</p>
       } @else {
         <ul class="sim__events">
           @for (e of log(); track e.time.getTime()) {
             <li class="sim__event" [class.sim__event--err]="!e.ok">
-              <span class="sim__dot" [class.sim__dot--err]="!e.ok"></span>
-              <span class="sim__event-main">
-                <strong>Zona {{ e.zone }}</strong> · {{ e.detector }} · {{ e.ppm }} ppm
-              </span>
+              <span class="sim__dot" [class.sim__dot--smoke]="e.kind === 'smoke'" [class.sim__dot--err]="!e.ok"></span>
+              <span class="sim__event-main">{{ e.text }}</span>
               <span class="sim__event-time">{{ e.time | date: 'HH:mm:ss' }}</span>
             </li>
           }
@@ -77,7 +79,7 @@
   </div>
 
   <p class="sim__hint">
-    Deja abierta cualquier vista: cada alerta emitida aparece como <strong>toast</strong> y en la
-    <strong>campana</strong> del panel, y se lista en <strong>Alertas de humo</strong>.
+    Las alertas aparecen como <strong>toast</strong> y en la <strong>campana</strong>; la ocupación
+    se actualiza en <strong>Dashboard</strong>, <strong>Zonas</strong> y <strong>Gemelo 3D</strong>.
   </p>
 </section>

@@ -1,6 +1,25 @@
 .twin__header {
-  margin-bottom: var(--sp-4);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-3);
 }
+.twin__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-3);
+  font-size: 0.82rem;
+  color: var(--sp-text-muted);
+}
+.twin__legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.twin__legend .dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.dot--free { background: #2e9e4d; }
+.dot--occupied { background: #c73a57; }
+.dot--reserved { background: #f5c229; }
+.twin__count { margin-left: auto; font-weight: 600; }
 .twin__header h1 {
   margin: 0;
   font-size: var(--sp-fs-h1);
