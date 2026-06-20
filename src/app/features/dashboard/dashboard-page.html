@@ -1,14 +1,13 @@
 <section class="dashboard">
   <header class="dashboard__header">
     <div>
-      <h1>Dashboard de ocupación</h1>
+      <h1>Console del operador</h1>
       @if (lastUpdated(); as t) {
-        <p class="dashboard__updated">Actualizado a las {{ t | date: 'HH:mm:ss' }}</p>
+        <p class="dashboard__updated">Gemelo digital · actualizado a las {{ t | date: 'HH:mm:ss' }}</p>
       }
     </div>
     <button class="sp-btn sp-btn--ghost" type="button" (click)="refresh()" [disabled]="loading()">
-      <sp-icon name="refresh" [size]="16" />
-      {{ loading() ? 'Actualizando…' : 'Actualizar' }}
+      <sp-icon name="refresh" [size]="16" /> {{ loading() ? 'Actualizando…' : 'Actualizar' }}
     </button>
   </header>
 
@@ -19,45 +18,59 @@
     </div>
   }
 
-  @if (loading() && !summary() && !degraded() && !error()) {
-    <!-- Skeleton de primera carga -->
-    <div class="dashboard__grid">
-      <sp-skeleton height="160px" radius="var(--sp-radius)" />
-      <div class="dashboard__cards-skeleton">
-        <sp-skeleton height="96px" radius="var(--sp-radius)" />
-        <sp-skeleton height="96px" radius="var(--sp-radius)" />
-        <sp-skeleton height="96px" radius="var(--sp-radius)" />
+  <div class="console">
+    <!-- Visor 3D del gemelo (elemento central) -->
+    <div class="sp-card console__viewer">
+      <div class="console__viewer-head">
+        <span><sp-icon name="cube" [size]="16" /> Gemelo digital 3D · ocupación en vivo</span>
       </div>
+      <sp-twin-viewer height="min(64vh, 620px)" />
     </div>
-    <sp-skeleton height="140px" radius="var(--sp-radius)" />
-  } @else if (error() && !summary()) {
-    <div class="sp-card">
-      <sp-empty-state
-        icon="warning"
-        tone="danger"
-        title="No se pudo cargar la ocupación"
-        [message]="error()!"
-      >
-        <button class="sp-btn sp-btn--primary" type="button" (click)="refresh()">Reintentar</button>
-      </sp-empty-state>
-    </div>
-  } @else if (summary(); as s) {
-    <div class="dashboard__grid">
-      <sp-occupancy-gauge [rate]="s.occupancyRate" />
-      <div class="dashboard__cards">
-        <sp-summary-cards [summary]="s" />
+
+    <!-- Panel de ocupación -->
+    <aside class="panel">
+      <div class="panel__head">Ocupación del lote</div>
+      <div class="panel__body">
+        @if (loading() && !summary() && !error()) {
+          <sp-skeleton height="92px" radius="var(--sp-radius)" />
+          <sp-skeleton height="180px" radius="var(--sp-radius)" />
+        } @else if (error() && !summary()) {
+          <sp-empty-state icon="warning" tone="danger" title="Sin datos de ocupación" [message]="error()!">
+            <button class="sp-btn sp-btn--primary" type="button" (click)="refresh()">Reintentar</button>
+          </sp-empty-state>
+        } @else if (summary(); as s) {
+          <div class="panel__metric">
+            <span class="panel__big">{{ percent() }}%</span>
+            <span class="panel__metric-sub">ocupación global</span>
+          </div>
+          <div class="panel__counts">
+            <div><strong>{{ s.totalSpaces }}</strong><span>Totales</span></div>
+            <div><strong class="is-occ">{{ s.occupiedSpaces }}</strong><span>Ocupados</span></div>
+            <div><strong class="is-free">{{ free() }}</strong><span>Libres</span></div>
+          </div>
+
+          <div class="panel__zones-title">Ocupación por zona</div>
+          <ul class="panel__zones">
+            @for (z of zones(); track z.zoneId) {
+              <li class="pzone">
+                <div class="pzone__head">
+                  <span class="pzone__code">{{ z.code }} · N{{ z.levelNumber }}</span>
+                  <span class="pzone__count">{{ z.occupiedSpaces }}/{{ z.totalSpaces }} · {{ label(z.congestionLevel) }}</span>
+                </div>
+                <div class="sp-meter">
+                  <div class="sp-meter__fill" [class]="fillClass(z.congestionLevel)" [style.width.%]="z.occupancyRate * 100"></div>
+                </div>
+              </li>
+            }
+          </ul>
+
+          <a class="sp-btn sp-btn--ghost panel__cta" routerLink="/zones">
+            Ver ocupación por nivel <sp-icon name="chevron-right" [size]="16" />
+          </a>
+        } @else if (degraded()) {
+          <sp-empty-state icon="wifi-off" title="Sin datos disponibles" message="El gemelo digital no responde." />
+        }
       </div>
-    </div>
-    <sp-zone-overview [zones]="zones()" />
-  } @else if (degraded()) {
-    <div class="sp-card">
-      <sp-empty-state
-        icon="wifi-off"
-        title="Sin datos disponibles"
-        message="El gemelo digital no responde y aún no hay un estado previo que mostrar."
-      >
-        <button class="sp-btn sp-btn--primary" type="button" (click)="refresh()">Reintentar</button>
-      </sp-empty-state>
-    </div>
-  }
+    </aside>
+  </div>
 </section>

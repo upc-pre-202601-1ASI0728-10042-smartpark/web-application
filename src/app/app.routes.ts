@@ -37,11 +37,6 @@ export const routes: Routes = [
           import('./features/alerts/alerts-page').then((m) => m.AlertsPage),
       },
       {
-        path: 'twin',
-        loadComponent: () =>
-          import('./features/twin/twin-page').then((m) => m.TwinPage),
-      },
-      {
         path: 'simulator',
         loadComponent: () =>
           import('./features/simulator/simulator-page').then((m) => m.SimulatorPage),
