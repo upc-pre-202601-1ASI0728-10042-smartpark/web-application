@@ -1,6 +1,7 @@
 .layout {
   display: grid;
   grid-template-columns: var(--sp-sidenav-w) 1fr;
+  grid-template-rows: 1fr; /* la fila ocupa todo el alto: evita el hueco inferior */
   min-height: 100vh;
   min-height: 100dvh;
   transition: grid-template-columns 0.2s ease;
