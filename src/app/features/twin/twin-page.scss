@@ -1,0 +1,39 @@
+.twin__header {
+  margin-bottom: var(--sp-4);
+}
+.twin__header h1 {
+  margin: 0;
+  font-size: var(--sp-fs-h1);
+}
+.twin__subtitle {
+  margin: 0.2rem 0 0;
+  color: var(--sp-text-muted);
+  font-size: 0.9rem;
+}
+
+.twin__viewer {
+  padding: 0;
+  overflow: hidden;
+}
+model-viewer {
+  display: block;
+  width: 100%;
+  height: min(68vh, 640px);
+  background: linear-gradient(180deg, #eef2f8, #dde6f2);
+  --poster-color: transparent;
+}
+.twin__poster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--sp-text-muted);
+  font-size: 0.9rem;
+}
+
+.twin__hint {
+  margin: var(--sp-3) 0 0;
+  font-size: 0.8rem;
+  color: var(--sp-text-muted);
+  text-align: center;
+}
