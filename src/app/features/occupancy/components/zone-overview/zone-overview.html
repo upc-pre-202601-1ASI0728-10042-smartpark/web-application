@@ -10,14 +10,11 @@
           <div class="zone__head">
             <span class="zone__code">{{ zone.code }}</span>
             <span class="zone__level">Nivel {{ zone.levelNumber }}</span>
+            <span class="zone__congestion">{{ label(zone.congestionLevel) }}</span>
             <span class="zone__count">{{ zone.occupiedSpaces }}/{{ zone.totalSpaces }}</span>
           </div>
-          <div class="zone__bar">
-            <div
-              class="zone__fill"
-              [class]="toneClass(zone.congestionLevel)"
-              [style.width.%]="percent(zone)"
-            ></div>
+          <div class="sp-meter">
+            <div class="sp-meter__fill" [class]="fillClass(zone.congestionLevel)" [style.width.%]="percent(zone)"></div>
           </div>
         </li>
       }

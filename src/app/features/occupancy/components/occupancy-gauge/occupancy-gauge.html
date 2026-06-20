@@ -1,6 +1,11 @@
 <div class="gauge sp-card">
   <h3 class="gauge__title">Ocupación global</h3>
-  <svg viewBox="0 0 128 128" class="gauge__svg">
+  <svg
+    viewBox="0 0 128 128"
+    class="gauge__svg"
+    role="img"
+    [attr.aria-label]="'Ocupación global ' + percent() + ' por ciento, congestión ' + severity()"
+  >
     <circle class="gauge__track" cx="64" cy="64" r="52" />
     <circle
       class="gauge__value"
@@ -14,4 +19,5 @@
     <text x="64" y="60" class="gauge__percent">{{ percent() }}%</text>
     <text x="64" y="82" class="gauge__caption">ocupado</text>
   </svg>
+  <span class="gauge__severity" [style.color]="color()">Congestión {{ severity() }}</span>
 </div>

@@ -12,7 +12,8 @@ import { SmokeAlertEvent } from './alert.models';
 
 /**
  * Cliente SignalR que se conecta al hub de alertas del backend y emite los
- * eventos "smokeAlert" en tiempo real hacia el panel del operador.
+ * eventos "smokeAlert" en tiempo real. Maneja reconexión automática y, tras
+ * recuperar la conexión, avisa para resincronizar el estado con la API.
  */
 @Injectable({ providedIn: 'root' })
 export class RealtimeAlertsService {
@@ -23,10 +24,15 @@ export class RealtimeAlertsService {
   /** Stream de alertas de humo recibidas en vivo. */
   readonly alert$ = this._alert$.asObservable();
 
+  private readonly _reconnected$ = new Subject<void>();
+  /** Se emite al recuperar la conexión: el consumidor debe refrescar su estado. */
+  readonly reconnected$ = this._reconnected$.asObservable();
+
   /** Estado de la conexión, para reflejarlo en la UI. */
   readonly connected = signal(false);
 
   async start(): Promise<void> {
+    if (!this.auth.token) return; // sin sesión no se intenta conectar
     if (this.connection && this.connection.state !== HubConnectionState.Disconnected) {
       return;
     }
@@ -40,7 +46,11 @@ export class RealtimeAlertsService {
       .build();
 
     this.connection.on('smokeAlert', (event: SmokeAlertEvent) => this._alert$.next(event));
-    this.connection.onreconnected(() => this.connected.set(true));
+    this.connection.onreconnecting(() => this.connected.set(false));
+    this.connection.onreconnected(() => {
+      this.connected.set(true);
+      this._reconnected$.next();
+    });
     this.connection.onclose(() => this.connected.set(false));
 
     try {
@@ -51,8 +61,18 @@ export class RealtimeAlertsService {
     }
   }
 
+  /** Reintento manual de conexión. */
+  async reconnect(): Promise<void> {
+    await this.stop();
+    await this.start();
+  }
+
   async stop(): Promise<void> {
-    await this.connection?.stop();
+    try {
+      await this.connection?.stop();
+    } catch {
+      /* noop */
+    }
     this.connected.set(false);
   }
 }

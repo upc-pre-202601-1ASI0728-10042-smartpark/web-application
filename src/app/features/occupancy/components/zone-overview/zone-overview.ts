@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { ZoneOccupancy } from '../../occupancy.models';
+import { congestionLabel, ZoneOccupancy } from '../../occupancy.models';
 
 /** Lista de zonas con su barra de ocupación y nivel de congestión. */
 @Component({
@@ -10,18 +10,20 @@ import { ZoneOccupancy } from '../../occupancy.models';
 export class ZoneOverview {
   readonly zones = input.required<ZoneOccupancy[]>();
 
+  protected readonly label = congestionLabel;
+
   protected percent(zone: ZoneOccupancy): number {
     return Math.round(zone.occupancyRate * 100);
   }
 
-  protected toneClass(level: ZoneOccupancy['congestionLevel']): string {
+  protected fillClass(level: ZoneOccupancy['congestionLevel']): string {
     switch (level) {
       case 'Full':
-        return 'bar--danger';
+        return 'sp-meter__fill--danger';
       case 'High':
-        return 'bar--warning';
+        return 'sp-meter__fill--warning';
       default:
-        return 'bar--success';
+        return 'sp-meter__fill--success';
     }
   }
 }

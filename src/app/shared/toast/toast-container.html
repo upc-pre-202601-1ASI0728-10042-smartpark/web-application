@@ -1,11 +1,28 @@
 <div class="toasts">
   @for (toast of toastService.toasts(); track toast.id) {
-    <div class="toast" [class]="'toast--' + toast.tone">
+    <div
+      class="toast"
+      [class]="'toast--' + toast.tone"
+      role="status"
+      [attr.aria-live]="ariaLive(toast)"
+      (mouseenter)="toastService.pause(toast.id)"
+      (mouseleave)="toastService.resume(toast.id)"
+      (focusin)="toastService.pause(toast.id)"
+      (focusout)="toastService.resume(toast.id)"
+    >
+      <span class="toast__icon"><sp-icon [name]="icon(toast.tone)" [size]="20" /></span>
       <div class="toast__body">
         <strong class="toast__title">{{ toast.title }}</strong>
         <span class="toast__message">{{ toast.message }}</span>
       </div>
-      <button class="toast__close" type="button" (click)="toastService.dismiss(toast.id)">×</button>
+      <button
+        class="toast__close"
+        type="button"
+        aria-label="Cerrar notificación"
+        (click)="toastService.dismiss(toast.id)"
+      >
+        <sp-icon name="close" [size]="16" />
+      </button>
     </div>
   }
 </div>

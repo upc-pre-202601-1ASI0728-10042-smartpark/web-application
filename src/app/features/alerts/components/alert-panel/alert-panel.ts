@@ -1,16 +1,19 @@
 import { Component, input } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { SmokeAlert } from '../../alert.models';
+import { incidentStatusLabel, SmokeAlert } from '../../alert.models';
+import { Icon } from '../../../../shared/ui/icon';
 
-/** Lista presentacional de alertas de humo activas. */
+/** Lista presentacional de alertas de humo activas (región en vivo accesible). */
 @Component({
   selector: 'sp-alert-panel',
-  imports: [DatePipe, DecimalPipe],
+  imports: [DatePipe, DecimalPipe, Icon],
   templateUrl: './alert-panel.html',
   styleUrl: './alert-panel.scss',
 })
 export class AlertPanel {
   readonly alerts = input.required<SmokeAlert[]>();
+
+  protected readonly statusLabel = incidentStatusLabel;
 
   protected statusClass(status: SmokeAlert['status']): string {
     switch (status) {
