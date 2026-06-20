@@ -14,16 +14,22 @@ export interface SmokeIngestPayload {
 }
 
 /**
- * Acciona el simulador IoT desde la UI: emite eventos de humo hacia el endpoint
- * de ingesta del backend (el mismo que usa el simulador Node.js). Pensado para
- * demostrar el flujo en vivo durante las entrevistas de validación.
+ * Acciona el simulador IoT desde la UI para demostrar el flujo en vivo durante
+ * las entrevistas de validación: emite alertas de humo (ingesta) y simula
+ * entradas/salidas de vehículos (ocupación).
  */
 @Injectable({ providedIn: 'root' })
 export class SimulatorService {
   private readonly http = inject(HttpClient);
-  private readonly ingestUrl = `${environment.apiBaseUrl}/alerts/smoke`;
+  private readonly api = environment.apiBaseUrl;
 
+  /** Emite un evento de humo hacia el endpoint de ingesta (anónimo). */
   triggerSmoke(payload: SmokeIngestPayload): Observable<unknown> {
-    return this.http.post(this.ingestUrl, payload);
+    return this.http.post(`${this.api}/alerts/smoke`, payload);
+  }
+
+  /** Simula movimiento de vehículos (cambia la ocupación; requiere sesión Operator). */
+  simulateOccupancy(): Observable<unknown> {
+    return this.http.post(`${this.api}/occupancy/simulate`, {});
   }
 }

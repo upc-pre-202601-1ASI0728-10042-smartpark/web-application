@@ -32,6 +32,21 @@
   gap: var(--sp-4);
   align-items: start;
 }
+.sim__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+.sim__note {
+  margin: 0 0 var(--sp-3);
+  font-size: 0.82rem;
+  color: var(--sp-text-muted);
+}
+.sim__btn {
+  width: 100%;
+  margin-top: var(--sp-2);
+}
+.sim__dot--smoke { background: var(--sp-danger); }
 .sim__card-title {
   margin: 0 0 var(--sp-4);
   font-size: 0.85rem;
