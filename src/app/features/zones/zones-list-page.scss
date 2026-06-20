@@ -1,23 +1,26 @@
-.zones-list__header h2 {
-  margin: 0 0 1.25rem;
+.zones-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+.zones-list__header h1 {
+  margin: 0;
+  font-size: var(--sp-fs-h1);
 }
 .zones-list__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
+  gap: var(--sp-4);
 }
 .zone-card {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--sp-2);
   color: var(--sp-text);
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
-.zone-card:hover {
-  text-decoration: none;
-  box-shadow: var(--sp-shadow-lg);
-  transform: translateY(-2px);
-}
+.zone-card:hover { text-decoration: none; }
 .zone-card__top {
   display: flex;
   align-items: center;
@@ -34,15 +37,5 @@
 .zone-card__metric {
   font-size: 0.9rem;
   color: var(--sp-text-muted);
-}
-.zone-card__bar {
-  height: 8px;
-  background: var(--sp-border);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.zone-card__fill {
-  height: 100%;
-  background: var(--sp-primary);
-  border-radius: 999px;
+  margin-bottom: var(--sp-1);
 }

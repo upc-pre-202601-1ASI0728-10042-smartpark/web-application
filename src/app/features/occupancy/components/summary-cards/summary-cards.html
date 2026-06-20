@@ -1,6 +1,6 @@
 <div class="cards">
   @for (card of cards(); track card.label) {
-    <div class="card sp-card" [class]="'card--' + card.tone">
+    <div class="card sp-card" [ngClass]="'card--' + card.tone">
       <span class="card__label">{{ card.label }}</span>
       <span class="card__value">{{ card.value }}</span>
       <span class="card__hint">{{ card.hint }}</span>

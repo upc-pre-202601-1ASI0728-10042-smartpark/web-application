@@ -7,13 +7,25 @@ y muestra, en tiempo real, la ocupación del estacionamiento y las alertas de hu
 
 ## Funcionalidades
 
-- **Autenticación JWT** con guardas de ruta por rol (`Operator`).
+- **Autenticación JWT** con guardas de ruta por rol (`Operator`), cierre de sesión
+  automático al expirar el token y preservación de la ruta de origen (`returnUrl`).
 - **Dashboard de ocupación**: indicador global, tarjetas de resumen y desglose por
-  zonas, con manejo de *modo degradado* cuando el gemelo digital no responde (503).
+  zonas, con **auto-refresco** periódico y *modo degradado* cuando el gemelo digital
+  no responde (503).
 - **Zonas**: listado con nivel de congestión y detalle con grilla de espacios
   filtrable por estado.
 - **Alertas de humo**: panel de alertas activas que se actualiza **en tiempo real**
-  vía **SignalR**, con notificaciones *toast* ante cada nueva alerta.
+  vía **SignalR**, con notificaciones *toast* y una **campana global** (con contador
+  de no leídas) que recibe alertas en cualquier vista y se resincroniza al reconectar.
+
+## Experiencia y calidad
+
+- **Accesibilidad**: regiones `aria-live` para alertas y toasts, foco visible,
+  navegación por teclado, *skip-link* y nombres accesibles en iconos/botones.
+- **Diseño**: sistema de tokens (espaciado, radios, tipografía, color), *skeletons*
+  de carga, estados vacíos/error consistentes e iconografía SVG propia.
+- **Responsive**: barra lateral *off-canvas* en móvil con overlay.
+- Respeta `prefers-reduced-motion`.
 
 ## Arquitectura (feature-based)
 

@@ -1,8 +1,11 @@
 <section class="zone-detail">
   <header class="zone-detail__header">
-    <a class="zone-detail__back" routerLink="/zones">← Zonas</a>
-    <h2>Zona {{ zoneId() }}</h2>
-    @if (!loading()) {
+    <a class="zone-detail__back" routerLink="/zones" aria-label="Volver a zonas">
+      <sp-icon name="arrow-left" [size]="18" />
+      <span>Zonas</span>
+    </a>
+    <h1>Zona {{ zoneId() }}</h1>
+    @if (!loading() && !error()) {
       <span class="zone-detail__summary">
         {{ occupiedCount() }} / {{ spaces().length }} ocupados
       </span>
@@ -10,7 +13,24 @@
   </header>
 
   @if (loading()) {
-    <div class="sp-card">Cargando espacios…</div>
+    <div class="grid" aria-hidden="true">
+      @for (s of skeletons; track s) {
+        <sp-skeleton height="56px" radius="var(--sp-radius-sm)" />
+      }
+    </div>
+  } @else if (error()) {
+    <div class="sp-card">
+      <sp-empty-state
+        icon="warning"
+        tone="danger"
+        title="No se pudieron cargar los espacios"
+        message="Ocurrió un problema al consultar la zona."
+      />
+    </div>
+  } @else if (spaces().length === 0) {
+    <div class="sp-card">
+      <sp-empty-state icon="parking" title="Sin espacios" message="Esta zona no tiene espacios registrados." />
+    </div>
   } @else {
     <div class="legend">
       <span><i class="dot space--free"></i> Libre</span>
@@ -19,26 +39,32 @@
       <span><i class="dot space--unknown"></i> Sin dato</span>
     </div>
 
-    <div class="filters">
-      @for (f of filters; track f) {
+    <div class="filters" role="group" aria-label="Filtrar espacios por estado">
+      @for (f of filters; track f.value) {
         <button
           type="button"
           class="chip"
-          [class.chip--active]="filter() === f"
-          (click)="setFilter(f)"
+          [class.chip--active]="filter() === f.value"
+          [attr.aria-pressed]="filter() === f.value"
+          (click)="setFilter(f.value)"
         >
-          {{ f === 'All' ? 'Todos' : f }}
+          {{ f.label }}
         </button>
       }
     </div>
 
     <div class="grid">
       @for (space of visibleSpaces(); track space.spaceId) {
-        <div class="space" [class]="stateClass(space.occupancyState)" [title]="space.occupancyState">
+        <div
+          class="space"
+          [class]="stateClass(space.occupancyState)"
+          [attr.aria-label]="space.code + ': ' + stateLabel(space.occupancyState)"
+          [title]="stateLabel(space.occupancyState)"
+        >
           {{ space.code }}
         </div>
       } @empty {
-        <div class="sp-card">Esta zona no tiene espacios registrados.</div>
+        <p class="grid__empty">No hay espacios con ese estado.</p>
       }
     </div>
   }

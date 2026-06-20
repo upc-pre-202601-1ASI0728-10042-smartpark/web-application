@@ -1,6 +1,5 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { inject } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
@@ -15,19 +14,24 @@ const TOKEN_KEY = 'smartpark.token';
 const USER_KEY = 'smartpark.user';
 
 /**
- * Servicio de autenticación: gestiona login/registro contra la API,
- * persiste el JWT y expone el usuario actual como signal reactivo.
+ * Servicio de autenticación: gestiona login/registro contra la API, persiste el
+ * JWT, expone el usuario actual como signal reactivo y cierra la sesión
+ * automáticamente al expirar el token.
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiBaseUrl}/auth`;
+  private expiryTimer?: ReturnType<typeof setTimeout>;
 
   private readonly _user = signal<AuthenticatedUser | null>(this.restoreUser());
 
   /** Usuario autenticado actual (null si no hay sesión). */
   readonly user = this._user.asReadonly();
-  readonly isAuthenticated = computed(() => this._user() !== null);
+  readonly isAuthenticated = computed(() => {
+    const u = this._user();
+    return !!u && u.expiresAt.getTime() > Date.now();
+  });
   readonly role = computed<UserRole | null>(() => this._user()?.role ?? null);
 
   login(request: LoginRequest): Observable<AuthResult> {
@@ -43,6 +47,7 @@ export class AuthService {
   }
 
   logout(): void {
+    if (this.expiryTimer) clearTimeout(this.expiryTimer);
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     this._user.set(null);
@@ -61,6 +66,19 @@ export class AuthService {
     localStorage.setItem(TOKEN_KEY, result.token);
     localStorage.setItem(USER_KEY, JSON.stringify(user));
     this._user.set(user);
+    this.scheduleExpiry(user);
+  }
+
+  /** Programa el cierre de sesión automático al llegar la expiración. */
+  private scheduleExpiry(user: AuthenticatedUser): void {
+    if (this.expiryTimer) clearTimeout(this.expiryTimer);
+    const ms = user.expiresAt.getTime() - Date.now();
+    if (ms <= 0) {
+      this.logout();
+      return;
+    }
+    // setTimeout admite hasta ~24.8 días; las sesiones son mucho más cortas.
+    this.expiryTimer = setTimeout(() => this.logout(), ms);
   }
 
   private restoreUser(): AuthenticatedUser | null {
@@ -69,11 +87,11 @@ export class AuthService {
     try {
       const parsed = JSON.parse(raw) as AuthenticatedUser;
       const user: AuthenticatedUser = { ...parsed, expiresAt: new Date(parsed.expiresAt) };
-      // Sesión expirada: limpiar.
-      if (user.expiresAt.getTime() < Date.now()) {
+      if (user.expiresAt.getTime() <= Date.now()) {
         this.logout();
         return null;
       }
+      this.scheduleExpiry(user);
       return user;
     } catch {
       return null;

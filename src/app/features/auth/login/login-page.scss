@@ -3,7 +3,8 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 1.5rem;
+  min-height: 100dvh;
+  padding: var(--sp-5);
   background: linear-gradient(135deg, var(--sp-primary-dark), var(--sp-primary));
 }
 
@@ -11,22 +12,33 @@
   width: 100%;
   max-width: 380px;
   background: var(--sp-surface);
-  border-radius: 16px;
+  border-radius: var(--sp-radius-lg);
   box-shadow: var(--sp-shadow-lg);
-  padding: 2.25rem 2rem;
+  padding: 2.25rem var(--sp-6);
 }
 
 .login__brand {
   text-align: center;
   margin-bottom: 1.75rem;
 }
-.login__logo { font-size: 2.5rem; }
+.login__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: var(--sp-radius-lg);
+  background: var(--sp-primary);
+  color: #fff;
+  margin-bottom: var(--sp-2);
+}
 .login__brand h1 {
-  margin: 0.25rem 0 0;
+  margin: var(--sp-1) 0 0;
+  font-size: var(--sp-fs-h1);
   color: var(--sp-primary-dark);
 }
 .login__subtitle {
-  margin: 0.25rem 0 0;
+  margin: var(--sp-1) 0 0;
   color: var(--sp-text-muted);
   font-size: 0.9rem;
 }
@@ -45,14 +57,17 @@
   width: 100%;
   padding: 0.65rem 0.75rem;
   border: 1px solid var(--sp-border);
-  border-radius: 8px;
+  border-radius: var(--sp-radius-sm);
   font-size: 0.95rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
+.field input:hover { border-color: #cdd4df; }
 .field input:focus {
   outline: none;
   border-color: var(--sp-primary);
-  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.15);
+  box-shadow: var(--sp-focus-ring);
 }
+.field--invalid input { border-color: var(--sp-danger); }
 .field__error {
   display: block;
   margin-top: 0.3rem;
@@ -61,16 +76,15 @@
 }
 
 .login__error {
-  background: #fdeaea;
+  background: var(--sp-danger-bg);
   color: var(--sp-danger);
-  border-radius: 8px;
+  border-radius: var(--sp-radius-sm);
   padding: 0.6rem 0.75rem;
   font-size: 0.85rem;
-  margin-bottom: 1rem;
+  margin-bottom: var(--sp-4);
 }
 
 .login__submit {
   width: 100%;
-  justify-content: center;
-  margin-top: 0.25rem;
+  margin-top: var(--sp-1);
 }

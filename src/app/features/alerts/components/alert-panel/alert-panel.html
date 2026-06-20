@@ -1,16 +1,21 @@
 @if (alerts().length === 0) {
-  <div class="empty sp-card">
-    ✅ Sin alertas de humo activas.
+  <div class="empty sp-card" role="status">
+    <sp-icon name="check" [size]="20" />
+    Sin alertas de humo activas.
   </div>
 } @else {
-  <ul class="alerts">
+  <ul class="alerts" role="region" aria-label="Alertas de humo activas" aria-live="assertive" aria-atomic="false">
     @for (alert of alerts(); track alert.detectorId) {
-      <li class="alert sp-card" [class.alert--critical]="alert.smokeDetected">
-        <div class="alert__icon">🔥</div>
+      <li
+        class="alert sp-card"
+        [class.alert--critical]="alert.smokeDetected"
+        [attr.role]="alert.smokeDetected ? 'alert' : null"
+      >
+        <div class="alert__icon" aria-hidden="true"><sp-icon name="flame" [size]="22" /></div>
         <div class="alert__body">
           <div class="alert__head">
             <span class="alert__zone">Zona {{ alert.zoneId }}</span>
-            <span class="sp-badge" [class]="statusClass(alert.status)">{{ alert.status }}</span>
+            <span class="sp-badge" [class]="statusClass(alert.status)">{{ statusLabel(alert.status) }}</span>
           </div>
           <div class="alert__meta">
             Detector {{ alert.detectorId }} · Nivel {{ alert.levelNumber }} ·

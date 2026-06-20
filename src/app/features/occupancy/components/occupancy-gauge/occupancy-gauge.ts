@@ -27,4 +27,11 @@ export class OccupancyGauge {
     if (p >= 60) return 'var(--sp-warning)';
     return 'var(--sp-success)';
   });
+
+  protected readonly severity = computed(() => {
+    const p = this.percent();
+    if (p >= 85) return 'Alta';
+    if (p >= 60) return 'Media';
+    return 'Baja';
+  });
 }

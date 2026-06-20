@@ -4,19 +4,21 @@ import { AuthService } from './auth.service';
 import { UserRole } from './auth.models';
 
 /** Bloquea el acceso a rutas privadas si no hay sesión activa. */
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (_route, state) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
   if (auth.isAuthenticated()) {
     return true;
   }
-  return router.createUrlTree(['/login']);
+  // Preserva el destino para volver tras autenticarse.
+  return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
 };
 
 /**
  * Restringe una ruta a uno o más roles. Se configura con
- * `data: { roles: ['Operator'] }`.
+ * `data: { roles: ['Operator'] }`. Un usuario autenticado con rol incorrecto se
+ * envía al dashboard (no al login) para evitar bucles.
  */
 export const roleGuard: CanActivateFn = (route) => {
   const auth = inject(AuthService);
@@ -27,5 +29,12 @@ export const roleGuard: CanActivateFn = (route) => {
   if (role && allowed.includes(role)) {
     return true;
   }
-  return router.createUrlTree(['/login']);
+  return router.createUrlTree([auth.isAuthenticated() ? '/dashboard' : '/login']);
+};
+
+/** Evita mostrar el login a un usuario ya autenticado. */
+export const loginGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  return auth.isAuthenticated() ? router.createUrlTree(['/dashboard']) : true;
 };
