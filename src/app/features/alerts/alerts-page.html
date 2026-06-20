@@ -1,14 +1,38 @@
 <section class="alerts-page">
   <header class="alerts-page__header">
-    <h2>Alertas de humo</h2>
-    <span class="conn" [class.conn--on]="connected()">
-      <i class="conn__dot"></i>
-      {{ connected() ? 'En vivo' : 'Sin conexión en vivo' }}
+    <h1>Alertas de humo</h1>
+    <span class="conn" [class.conn--on]="connected()" aria-live="polite">
+      <sp-icon [name]="connected() ? 'wifi' : 'wifi-off'" [size]="16" />
+      {{ connected() ? 'En vivo' : 'Sin conexión' }}
     </span>
   </header>
 
-  @if (loading()) {
-    <div class="sp-card">Cargando alertas…</div>
+  @if (!connected()) {
+    <div class="sp-alert sp-alert--warning alerts-page__banner" role="status">
+      <sp-icon name="wifi-off" [size]="18" />
+      <span>Sin conexión en tiempo real. Las nuevas alertas podrían no mostrarse al instante.</span>
+      <button class="sp-btn sp-btn--ghost alerts-page__reconnect" type="button" (click)="reconnect()">
+        Reconectar
+      </button>
+    </div>
+  }
+
+  @if (loading() && alerts().length === 0) {
+    <div class="alerts-page__skeletons" aria-hidden="true">
+      <sp-skeleton height="84px" radius="var(--sp-radius)" />
+      <sp-skeleton height="84px" radius="var(--sp-radius)" />
+    </div>
+  } @else if (error() && alerts().length === 0) {
+    <div class="sp-card">
+      <sp-empty-state
+        icon="warning"
+        tone="danger"
+        title="No se pudieron cargar las alertas"
+        message="No se pudo consultar el estado de seguridad. Reintenta."
+      >
+        <button class="sp-btn sp-btn--primary" type="button" (click)="load()">Reintentar</button>
+      </sp-empty-state>
+    </div>
   } @else {
     <sp-alert-panel [alerts]="alerts()" />
   }
