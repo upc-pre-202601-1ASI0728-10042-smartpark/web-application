@@ -1,30 +1,51 @@
 <section class="zones-list">
   <header class="zones-list__header">
-    <h2>Zonas del estacionamiento</h2>
+    <h1>Zonas del estacionamiento</h1>
+    <button class="sp-btn sp-btn--ghost" type="button" (click)="load()" [disabled]="loading()">
+      <sp-icon name="refresh" [size]="16" />
+      Actualizar
+    </button>
   </header>
 
   @if (loading()) {
-    <div class="sp-card">Cargando zonas…</div>
+    <div class="zones-list__grid" aria-hidden="true">
+      @for (s of skeletons; track s) {
+        <sp-skeleton height="132px" radius="var(--sp-radius)" />
+      }
+    </div>
+  } @else if (error()) {
+    <div class="sp-card">
+      <sp-empty-state
+        icon="warning"
+        tone="danger"
+        title="No se pudieron cargar las zonas"
+        message="Ocurrió un problema al consultar la API. Inténtalo de nuevo."
+      >
+        <button class="sp-btn sp-btn--primary" type="button" (click)="load()">Reintentar</button>
+      </sp-empty-state>
+    </div>
+  } @else if (zones().length === 0) {
+    <div class="sp-card">
+      <sp-empty-state icon="parking" title="No hay zonas registradas" message="Aún no hay zonas disponibles para este lote." />
+    </div>
   } @else {
     <div class="zones-list__grid">
       @for (zone of zones(); track zone.zoneId) {
-        <a class="zone-card sp-card" [routerLink]="['/zones', zone.zoneId]">
+        <a class="zone-card sp-card sp-card--interactive" [routerLink]="['/zones', zone.zoneId]">
           <div class="zone-card__top">
             <span class="zone-card__code">{{ zone.code }}</span>
             <span class="sp-badge" [class]="badgeClass(zone.congestionLevel)">
-              {{ zone.congestionLevel }}
+              {{ label(zone.congestionLevel) }}
             </span>
           </div>
           <span class="zone-card__level">Nivel {{ zone.levelNumber }}</span>
           <div class="zone-card__metric">
             <strong>{{ zone.occupiedSpaces }}</strong> / {{ zone.totalSpaces }} ocupados
           </div>
-          <div class="zone-card__bar">
-            <div class="zone-card__fill" [style.width.%]="percent(zone)"></div>
+          <div class="sp-meter">
+            <div class="sp-meter__fill" [class]="fillClass(zone.congestionLevel)" [style.width.%]="percent(zone)"></div>
           </div>
         </a>
-      } @empty {
-        <div class="sp-card">No hay zonas registradas.</div>
       }
     </div>
   }
