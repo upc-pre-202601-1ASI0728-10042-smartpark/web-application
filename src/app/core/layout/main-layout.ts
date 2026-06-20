@@ -43,10 +43,9 @@ export class MainLayout implements OnInit, OnDestroy {
   protected readonly bellOpen = signal(false);
 
   protected readonly nav: NavItem[] = [
-    { label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
-    { label: 'Zonas', path: '/zones', icon: 'parking' },
-    { label: 'Alertas de humo', path: '/alerts', icon: 'flame' },
-    { label: 'Gemelo 3D', path: '/twin', icon: 'cube' },
+    { label: 'Console', path: '/dashboard', icon: 'dashboard' },
+    { label: 'Ocupación por nivel', path: '/zones', icon: 'parking' },
+    { label: 'Alertas de seguridad', path: '/alerts', icon: 'flame' },
     { label: 'Simulador IoT', path: '/simulator', icon: 'activity' },
   ];
 
