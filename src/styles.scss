@@ -3,32 +3,34 @@
    =========================================================================== */
 
 :root {
-  /* Marca */
-  --sp-primary: #1565c0;
-  --sp-primary-dark: #0d47a1;
-  --sp-primary-light: #5e92f3;
-  --sp-accent: #00bfa5;
+  /* Marca — Design System SmartPark (report §6.1.1) */
+  --sp-primary: #194756;      /* teal */
+  --sp-primary-dark: #0f2f3a;
+  --sp-primary-light: #54736e; /* slate */
+  --sp-secondary: #54736e;     /* slate */
+  --sp-cream: #f2eabc;         /* background light */
+  --sp-accent: #ff3b58;        /* coral */
 
   /* Estados */
   --sp-success: #2e7d32;
-  --sp-warning: #f9a825;
-  --sp-danger: #c62828;
-  --sp-info: #0277bd;
+  --sp-warning: #ffc107;
+  --sp-danger: #ff3b58;        /* alert/danger = coral */
+  --sp-info: #194756;
 
   /* Fondos de estado (tokens, antes hardcodeados) */
   --sp-success-bg: #e6f4ea;
-  --sp-warning-bg: #fff6e0;
-  --sp-warning-text: #a66a00;
-  --sp-warning-border: #f5d98a;
-  --sp-danger-bg: #fdeaea;
-  --sp-neutral: #b0b8c4;
+  --sp-warning-bg: #fff8e1;
+  --sp-warning-text: #8a6500;
+  --sp-warning-border: #ffe49b;
+  --sp-danger-bg: #ffe9ec;
+  --sp-neutral: #6c757d;       /* neutral gray */
 
   /* Superficies */
-  --sp-bg: #f4f6f9;
+  --sp-bg: #f6f5f0;            /* canvas cálido claro */
   --sp-surface: #ffffff;
-  --sp-border: #e3e7ee;
-  --sp-text: #1f2733;
-  --sp-text-muted: #5a626e; /* oscurecido para contraste AA */
+  --sp-border: #e4e2d6;
+  --sp-text: #080000;          /* ink */
+  --sp-text-muted: #6c757d;    /* neutral gray */
 
   /* Opacidades sobre el sidenav */
   --sp-on-primary-90: rgba(255, 255, 255, 0.92);
@@ -43,10 +45,10 @@
   --sp-5: 1.5rem;
   --sp-6: 2rem;
 
-  /* Radios */
-  --sp-radius-sm: 8px;
-  --sp-radius: 12px;
-  --sp-radius-lg: 16px;
+  /* Radios — cards 8px (report) */
+  --sp-radius-sm: 6px;
+  --sp-radius: 8px;
+  --sp-radius-lg: 14px;
   --sp-radius-pill: 999px;
 
   /* Tipografía */
@@ -57,9 +59,9 @@
 
   /* Layout */
   --sp-sidenav-w: 248px;
-  --sp-shadow: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.06);
-  --sp-shadow-lg: 0 8px 24px rgba(16, 24, 40, 0.12);
-  --sp-focus-ring: 0 0 0 3px rgba(21, 101, 192, 0.35);
+  --sp-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --sp-shadow-lg: 0 8px 24px rgba(8, 0, 0, 0.14);
+  --sp-focus-ring: 0 0 0 3px rgba(25, 71, 86, 0.35);
 }
 
 * { box-sizing: border-box; }
@@ -67,7 +69,7 @@
 html, body {
   height: 100%;
   margin: 0;
-  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 16px;
   line-height: var(--sp-lh);
   background: var(--sp-bg);
