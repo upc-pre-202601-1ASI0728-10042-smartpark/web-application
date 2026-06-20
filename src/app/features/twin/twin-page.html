@@ -1,0 +1,30 @@
+<section class="twin">
+  <header class="twin__header">
+    <h1>Gemelo digital 3D</h1>
+    <p class="twin__subtitle">
+      Modelo del estacionamiento sincronizado con Azure Digital Twins.
+    </p>
+  </header>
+
+  <div class="sp-card twin__viewer">
+    <model-viewer
+      src="models/parking-garage.glb"
+      alt="Modelo 3D del estacionamiento SmartPark"
+      camera-controls
+      auto-rotate
+      auto-rotate-delay="800"
+      rotation-per-second="18deg"
+      shadow-intensity="1"
+      exposure="1.05"
+      camera-orbit="40deg 65deg 110%"
+      min-camera-orbit="auto auto 60%"
+      interaction-prompt="none"
+      (load)="onLoad()"
+    >
+      <div slot="poster" class="twin__poster">Cargando modelo 3D…</div>
+      <div slot="progress-bar"></div>
+    </model-viewer>
+  </div>
+
+  <p class="twin__hint">Arrastra para rotar · rueda del ratón para acercar.</p>
+</section>
