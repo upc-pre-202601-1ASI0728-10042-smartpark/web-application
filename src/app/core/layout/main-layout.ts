@@ -46,6 +46,7 @@ export class MainLayout implements OnInit, OnDestroy {
     { label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
     { label: 'Zonas', path: '/zones', icon: 'parking' },
     { label: 'Alertas de humo', path: '/alerts', icon: 'flame' },
+    { label: 'Gemelo 3D', path: '/twin', icon: 'cube' },
   ];
 
   ngOnInit(): void {
