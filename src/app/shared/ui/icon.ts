@@ -19,7 +19,13 @@ export type IconName =
   | 'cube'
   | 'activity'
   | 'play'
-  | 'stop';
+  | 'stop'
+  | 'bulb'
+  | 'leaf'
+  | 'car'
+  | 'map-pin'
+  | 'clock'
+  | 'shield-check';
 
 /**
  * Iconos SVG de línea (estilo Lucide), consistentes entre navegadores y
@@ -62,6 +68,12 @@ export type IconName =
         @case ('activity') { <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /> }
         @case ('play') { <polygon points="5 3 19 12 5 21 5 3" /> }
         @case ('stop') { <rect x="5" y="5" width="14" height="14" rx="2" /> }
+        @case ('bulb') { <path d="M9 18h6" /><path d="M10 22h4" /><path d="M8.5 15a5.5 5.5 0 1 1 7 0c-.6.5-1 1.2-1 2v0h-5v0c0-.8-.4-1.5-1-2z" /> }
+        @case ('leaf') { <path d="M11 20A7 7 0 0 1 4 13c0-6 5-9 16-9 0 8-4 13-9 13-2 0-3.5-1-3.5-3" /><path d="M8 17c2-4 5-6 9-7" /> }
+        @case ('car') { <path d="M5 13l1.5-4.5A2 2 0 0 1 8.4 7h7.2a2 2 0 0 1 1.9 1.5L19 13" /><path d="M4 13h16v4a1 1 0 0 1-1 1h-1a2 2 0 0 1-4 0h-4a2 2 0 0 1-4 0H5a1 1 0 0 1-1-1z" /><line x1="7" y1="15.5" x2="7.01" y2="15.5" /><line x1="17" y1="15.5" x2="17.01" y2="15.5" /> }
+        @case ('map-pin') { <path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /> }
+        @case ('clock') { <circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" /> }
+        @case ('shield-check') { <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><polyline points="9 12 11 14 15 10" /> }
       }
     </svg>
   `,

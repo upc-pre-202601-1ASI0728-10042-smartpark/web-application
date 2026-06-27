@@ -46,6 +46,7 @@ export class MainLayout implements OnInit, OnDestroy {
     { label: 'Console', path: '/dashboard', icon: 'dashboard' },
     { label: 'Ocupación por nivel', path: '/zones', icon: 'parking' },
     { label: 'Alertas de seguridad', path: '/alerts', icon: 'flame' },
+    { label: 'Eficiencia energética', path: '/energy', icon: 'bulb' },
     { label: 'Simulador IoT', path: '/simulator', icon: 'activity' },
   ];
 
