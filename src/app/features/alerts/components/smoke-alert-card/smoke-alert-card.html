@@ -1,0 +1,55 @@
+<article
+  class="live sp-card"
+  [class.live--critical]="critical()"
+  [class.live--resolved]="resolved()"
+  [attr.role]="critical() ? 'alert' : 'status'"
+  aria-live="assertive"
+>
+  <div class="live__banner">
+    <span class="live__pulse" aria-hidden="true"><sp-icon name="flame" [size]="24" /></span>
+    <div class="live__headline">
+      <span class="live__title">Alerta de humo en vivo</span>
+      <span class="sp-badge live__status" [class.sp-badge--danger]="critical()" [class.sp-badge--warning]="acknowledged()" [class.sp-badge--success]="resolved()">
+        {{ statusLabel(alert().status) }}
+      </span>
+    </div>
+  </div>
+
+  <dl class="live__grid">
+    <div class="live__field">
+      <dt><sp-icon name="map-pin" [size]="16" /> Ubicación</dt>
+      <dd>Zona {{ alert().zoneId }} · Nivel {{ alert().levelNumber }}</dd>
+    </div>
+    <div class="live__field">
+      <dt><sp-icon name="activity" [size]="16" /> Concentración</dt>
+      <dd><strong>{{ alert().smokeLevel | number: '1.0-0' }}</strong> ppm</dd>
+    </div>
+    <div class="live__field">
+      <dt><sp-icon name="cube" [size]="16" /> Detector</dt>
+      <dd>{{ alert().detectorId }}</dd>
+    </div>
+    <div class="live__field">
+      <dt><sp-icon name="clock" [size]="16" /> Detección</dt>
+      <dd>{{ alert().lastReading | date: 'short' }}</dd>
+    </div>
+  </dl>
+
+  <div class="live__actions">
+    <button
+      class="sp-btn sp-btn--ghost"
+      type="button"
+      (click)="onAcknowledge()"
+      [disabled]="busy() || acknowledged() || resolved()"
+    >
+      <sp-icon name="check" [size]="16" /> Confirmar
+    </button>
+    <button
+      class="sp-btn sp-btn--danger"
+      type="button"
+      (click)="onResolve()"
+      [disabled]="busy() || resolved()"
+    >
+      <sp-icon name="shield-check" [size]="16" /> Resolver incidente
+    </button>
+  </div>
+</article>

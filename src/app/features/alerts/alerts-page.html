@@ -17,6 +17,16 @@
     </div>
   }
 
+  @if (liveAlert(); as live) {
+    <sp-smoke-alert-card
+      class="alerts-page__live"
+      [alert]="live"
+      [busy]="busy() === live.detectorId"
+      (acknowledge)="acknowledge($event)"
+      (resolve)="resolve($event)"
+    />
+  }
+
   @if (loading() && alerts().length === 0) {
     <div class="alerts-page__skeletons" aria-hidden="true">
       <sp-skeleton height="84px" radius="var(--sp-radius)" />

@@ -13,4 +13,14 @@ export class AlertService {
   getActive(): Observable<SmokeAlert[]> {
     return this.http.get<SmokeAlert[]>(this.baseUrl);
   }
+
+  /** Confirma (acknowledge) un incidente de humo: pasa a estado "Confirmada". */
+  acknowledge(detectorId: string): Observable<unknown> {
+    return this.http.post(`${this.baseUrl}/${detectorId}/acknowledge`, {});
+  }
+
+  /** Resuelve un incidente de humo: pasa a estado "Resuelta". */
+  resolve(detectorId: string): Observable<unknown> {
+    return this.http.post(`${this.baseUrl}/${detectorId}/resolve`, {});
+  }
 }
