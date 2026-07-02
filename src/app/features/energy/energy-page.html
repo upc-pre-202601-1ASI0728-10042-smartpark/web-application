@@ -43,6 +43,9 @@
     </div>
   </div>
 
+  <!-- Contexto de flujo vehicular: explica la ocupación observada -->
+  <sp-sessions-summary class="energy__flow" />
+
   @if (loading() && recommendations().length === 0) {
     <div class="cards" aria-hidden="true">
       @for (s of skeletons; track s) {

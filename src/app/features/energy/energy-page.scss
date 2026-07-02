@@ -57,6 +57,11 @@
   color: var(--sp-text-muted);
 }
 
+.energy__flow {
+  display: block;
+  margin-bottom: var(--sp-5);
+}
+
 /* Tarjetas de recomendación -------------------------------------------------- */
 .cards {
   list-style: none;

@@ -9,6 +9,7 @@ import {
   lightingActionBadge,
   lightingActionLabel,
 } from './energy.models';
+import { SessionsSummary } from '../sessions/components/sessions-summary/sessions-summary';
 import { Icon } from '../../shared/ui/icon';
 import { Skeleton } from '../../shared/ui/skeleton';
 import { EmptyState } from '../../shared/ui/empty-state';
@@ -27,7 +28,7 @@ type Outcome =
  */
 @Component({
   selector: 'sp-energy-page',
-  imports: [Icon, Skeleton, EmptyState, DatePipe, DecimalPipe],
+  imports: [Icon, Skeleton, EmptyState, DatePipe, DecimalPipe, SessionsSummary],
   templateUrl: './energy-page.html',
   styleUrl: './energy-page.scss',
 })

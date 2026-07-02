@@ -1,0 +1,50 @@
+<div class="flow sp-card">
+  <div class="flow__head">
+    <span class="flow__title"><sp-icon name="car" [size]="18" /> Flujo vehicular</span>
+    @if (summary(); as s) {
+      <span class="flow__asof">{{ s.asOf | date: 'HH:mm' }}</span>
+    }
+  </div>
+
+  @if (degraded()) {
+    <div class="sp-alert sp-alert--warning flow__banner" role="status">
+      <sp-icon name="warning" [size]="16" />
+      Datos de sesiones no disponibles.
+    </div>
+  }
+
+  @if (loading() && !summary()) {
+    <div class="flow__skeletons" aria-hidden="true">
+      <sp-skeleton height="64px" radius="var(--sp-radius)" />
+      <sp-skeleton height="64px" radius="var(--sp-radius)" />
+    </div>
+  } @else if (error() && !summary()) {
+    <sp-empty-state
+      icon="warning"
+      tone="danger"
+      title="Sin datos de flujo"
+      message="No se pudo consultar el resumen de sesiones."
+    >
+      <button class="sp-btn sp-btn--ghost" type="button" (click)="refresh()">Reintentar</button>
+    </sp-empty-state>
+  } @else if (summary(); as s) {
+    <div class="flow__grid">
+      <div class="flow__stat">
+        <span class="flow__value">{{ s.activeSessions }}</span>
+        <span class="flow__label">Vehículos activos</span>
+      </div>
+      <div class="flow__stat">
+        <span class="flow__value flow__value--in">{{ s.entriesLastHour }}</span>
+        <span class="flow__label">Entradas / h</span>
+      </div>
+      <div class="flow__stat">
+        <span class="flow__value flow__value--out">{{ s.exitsLastHour }}</span>
+        <span class="flow__label">Salidas / h</span>
+      </div>
+      <div class="flow__stat">
+        <span class="flow__value">{{ s.averageDurationMinutes }}<small> min</small></span>
+        <span class="flow__label">Estadía media</span>
+      </div>
+    </div>
+  }
+</div>
