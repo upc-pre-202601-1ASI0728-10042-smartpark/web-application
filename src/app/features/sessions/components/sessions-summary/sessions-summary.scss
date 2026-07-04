@@ -1,0 +1,60 @@
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.flow__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.flow__title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-weight: 700;
+  color: var(--sp-primary);
+}
+.flow__asof {
+  font-size: 0.78rem;
+  color: var(--sp-text-muted);
+}
+.flow__banner {
+  font-size: 0.82rem;
+}
+.flow__skeletons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+.flow__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-3);
+}
+.flow__stat {
+  background: var(--sp-bg);
+  border-radius: var(--sp-radius-sm);
+  padding: var(--sp-3) var(--sp-2);
+  text-align: center;
+}
+.flow__value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--sp-text);
+}
+.flow__value small { font-size: 0.8rem; font-weight: 600; color: var(--sp-text-muted); }
+.flow__value--in { color: var(--sp-success); }
+.flow__value--out { color: var(--sp-accent); }
+.flow__label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--sp-text-muted);
+  margin-top: 0.2rem;
+}
+
+@media (max-width: 720px) {
+  .flow__grid { grid-template-columns: 1fr 1fr; }
+}

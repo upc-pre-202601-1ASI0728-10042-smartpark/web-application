@@ -1,0 +1,117 @@
+<section class="energy">
+  <header class="energy__header">
+    <div>
+      <h1>Eficiencia energética</h1>
+      @if (lastUpdated(); as t) {
+        <p class="energy__updated">Recomendaciones de iluminación · actualizado a las {{ t | date: 'HH:mm:ss' }}</p>
+      }
+    </div>
+    <button class="sp-btn sp-btn--ghost" type="button" (click)="refresh()" [disabled]="loading()">
+      <sp-icon name="refresh" [size]="16" /> {{ loading() ? 'Actualizando…' : 'Actualizar' }}
+    </button>
+  </header>
+
+  @if (degraded()) {
+    <div class="sp-alert sp-alert--warning energy__banner" role="status">
+      <sp-icon name="warning" [size]="18" />
+      Modo degradado: el servicio de energía no responde. Se muestra el último cálculo conocido.
+    </div>
+  }
+
+  <!-- Resumen de ahorro -->
+  <div class="summary">
+    <div class="summary__card sp-card">
+      <span class="summary__icon summary__icon--leaf"><sp-icon name="leaf" [size]="22" /></span>
+      <div>
+        <span class="summary__value">{{ totalSavings() | number: '1.1-1' }} kWh/h</span>
+        <span class="summary__label">Ahorro estimado</span>
+      </div>
+    </div>
+    <div class="summary__card sp-card">
+      <span class="summary__icon summary__icon--bulb"><sp-icon name="bulb" [size]="22" /></span>
+      <div>
+        <span class="summary__value">{{ actionable().length }}</span>
+        <span class="summary__label">Zonas por optimizar</span>
+      </div>
+    </div>
+    <div class="summary__card sp-card">
+      <span class="summary__icon"><sp-icon name="parking" [size]="22" /></span>
+      <div>
+        <span class="summary__value">{{ recommendations().length }}</span>
+        <span class="summary__label">Zonas monitoreadas</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contexto de flujo vehicular: explica la ocupación observada -->
+  <sp-sessions-summary class="energy__flow" />
+
+  @if (loading() && recommendations().length === 0) {
+    <div class="cards" aria-hidden="true">
+      @for (s of skeletons; track s) {
+        <sp-skeleton height="150px" radius="var(--sp-radius)" />
+      }
+    </div>
+  } @else if (error() && recommendations().length === 0) {
+    <div class="sp-card">
+      <sp-empty-state
+        icon="warning"
+        tone="danger"
+        title="No se pudieron cargar las recomendaciones"
+        message="No se pudo consultar el servicio de energía. Reintenta en unos segundos."
+      >
+        <button class="sp-btn sp-btn--primary" type="button" (click)="refresh()">Reintentar</button>
+      </sp-empty-state>
+    </div>
+  } @else if (recommendations().length === 0) {
+    <div class="sp-card">
+      <sp-empty-state
+        icon="check"
+        tone="success"
+        title="Sin oportunidades de ahorro"
+        message="Todas las zonas tienen una ocupación que justifica su iluminación actual."
+      />
+    </div>
+  } @else {
+    <ul class="cards" role="list" aria-label="Recomendaciones de iluminación por zona">
+      @for (r of recommendations(); track r.zoneId) {
+        <li class="rec sp-card" [class.rec--idle]="r.action !== 'Maintain'">
+          <div class="rec__head">
+            <div class="rec__title">
+              <span class="rec__code">{{ r.code }}</span>
+              <span class="rec__level">Nivel {{ r.levelNumber }}</span>
+            </div>
+            <span class="sp-badge" [class]="actionBadge(r.action)">
+              <sp-icon name="bulb" [size]="14" /> {{ actionLabel(r.action) }}
+            </span>
+          </div>
+
+          <div class="rec__occ">
+            <div class="rec__occ-head">
+              <span>Ocupación</span>
+              <span>{{ r.occupiedSpaces }}/{{ r.totalSpaces }} · {{ percent(r.occupancyRate) }}%</span>
+            </div>
+            <div class="sp-meter">
+              <div class="sp-meter__fill" [class]="fillClass(r.occupancyRate)" [style.width.%]="r.occupancyRate * 100"></div>
+            </div>
+          </div>
+
+          <div class="rec__lighting">
+            <div class="rec__lighting-row">
+              <span class="rec__lighting-label">Iluminación</span>
+              <span class="rec__lighting-value">
+                {{ r.currentLightingLevel }}%
+                <sp-icon name="chevron-right" [size]="14" />
+                <strong>{{ r.recommendedLightingLevel }}%</strong>
+              </span>
+            </div>
+            <div class="rec__savings">
+              <sp-icon name="leaf" [size]="14" />
+              Ahorro {{ r.estimatedSavingsKwh | number: '1.1-1' }} kWh/h
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>
